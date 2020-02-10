@@ -18,18 +18,24 @@
 // These changes will be outlined in this project where implemented.
 // MD5 operates on 32-bit words.
 
+// Terminology -- Reference [5 (Part 2)]:
+// word: 32-bit quantity
+// byte: 8-bit quantity
+// x_i : x sub i
+
 // Symbols and Operations --> See Reference [6] Section 2.2.2
 
 #include <stdio.h>
 #include <stdint.h>
 
 // Constants definition -- Based on MD4 -- ([1]Section 9.49)
+// Four word buffer --> A,B,C,D
 const uint32_t IV[] = {0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476};
 
-// Define constants -- ([1] Section 9.49)
-uint32_t y[47];
+// -- Auxillary Functions --
+// Input 3 32-bit words --> Produce as output one 32-bit word
 
-// Function Declaration -- Reference [4]
+// Function Declaratin -- Reference [4]
 uint32_t F(uint32_t x, uint32_t y, uint32_t z)
 {
     return (x & y) | (~x & z);
@@ -56,19 +62,36 @@ uint32_t I(uint32_t x, uint32_t y, uint32_t z)
 int main(int argc, char *argv[])
 {
 
-    // // Define constants ? (Probably not the correct way..) -- ([1] Section 9.49)
-    // // y[j] = 0, 0 <= j <= 15;
-    // for (int j = 0; j <= 15; j++)
+    // Let M = Message to be hashed
+    // M should be padded so that length = 448 % 512
+    // Padded message should be 64 bits less than multiple of 512
+    // Padding should be appended as 64 bit block
+
+    // Let M = Message
+    // Let N = number of 32-bit words in (padded) message
+
+    // // Process each 16-word block
+    // for (int i = 0; i <= 32 / 16 - 1; i++)
     // {
-    //     printf("y[j]          = %08x\n", y[j]);
-    //     y[j] = j;
-    // };
+    //     // Copy block i into X
+    //     for (int j = 0; j <= 15; j++)
+    //     {
+    //         uint32_t X = 0;
+    //     }
+    // }
 
-    // // Define constants -- ([1] Section 9.49)
-    // //
-    // // for (int j=16; )
+    uint32_t x = 0x0f0f0f0f;
+    uint32_t y = 0xcccccccc;
+    uint32_t z = 0x55555555;
 
-    printf("IV[2]         = %08x\n", IV[2]);
+    printf("x            = %08x\n", x);
+    printf("y            = %08x\n", y);
+    printf("z            = %08x\n", z);
+
+    printf("F(x,y,z)      = %08x\n", F(x,y,z));
+    printf("G(x,y,z)      = %08x\n", G(x,y,z));
+    printf("H(x,y,z)      = %08x\n", H(x,y,z));
+    printf("I(x,y,z)      = %08x\n", I(x,y,z));
 
     return 0;
 }
