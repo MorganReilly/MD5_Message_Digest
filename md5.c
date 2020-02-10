@@ -66,14 +66,14 @@ uint32_t I(uint32_t x, uint32_t y, uint32_t z)
 void display_header()
 {
     printf("\n");
-    printf("\n------------------------------\n");
+    printf("\n------------------------------");
     // printf("\n|                         |\n");
     printf("\n|     MD5 Message Digest     |");
     printf("\n|         G00303598          |\n");
     printf("|                            |");
     printf("\n|       Morgan Reilly        |\n");
     // printf("\n                              \n");
-    printf("\n------------------------------\n");
+    printf("------------------------------\n");
     printf("\n");
 }
 
