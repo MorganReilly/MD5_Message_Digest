@@ -11,7 +11,7 @@
 // [5] https://www.ietf.org/rfc/rfc1321.txt
 // [6] https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
 // [7] https://www.geeksforgeeks.org/bitwise-operators-in-c-cpp/
-
+// [8] https://www.cs.bu.edu/teaching/c/file-io/intro/ -- File IO
 // About MD5:
 // MD5 was designed as a strengthened version of MD4, prior to actual MD4 collisions being found.
 // MD5 is obtained from MD4 by making modifications.
@@ -26,11 +26,14 @@
 // Algorithm Steps (Overview) -- Reference [5 (3)]:
 // Step 1: Append Padding Bits
 // Step 2: Append Length
+// Step 3:
 
 // Symbols and Operations --> See Reference [6] Section 2.2.2
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
+#include <inttypes.h> // Includes formatters for printf
 
 // Constants definition -- Based on MD4 -- ([1]Section 9.49)
 // Four word buffer --> A,B,C,D
@@ -63,9 +66,69 @@ uint32_t I(uint32_t x, uint32_t y, uint32_t z)
     return (y ^ (x | ~z));
 }
 
+// Check number of zero bytes
+uint64_t no_zero_bytes(uint64_t no_bits)
+{
+    uint64_t res = 512 - (no_bits % 512ULL);
+
+    if (res < 65)
+        res += 512;
+
+    res -= 72;
+
+    return (res / 8ULL);
+}
+
+// Check for command line input
+void padd_from_file(char *fileName)
+{
+    FILE *inFile;
+    char *mode = "rb";
+
+    // Expect command line arg
+    // if (argc != 2)
+    // {
+    //     printf("Error: expected single filename as argument\n");
+    //     return 1;
+    // }
+
+    inFile = fopen(fileName, mode);
+
+    // Error handling -- Can't open file
+    if (inFile == NULL) {
+        fprintf(stderr, "Can't open input file inputFile.txt!\n");
+        exit(1);
+    }
+
+    uint8_t b;
+    // Keep track of all bits seen
+    uint64_t noBits;
+
+    // Try read file 1 byte at a time..
+    // Read into b (& -> Address)
+    // Read 1 byte, read 1 copy of bytes, from inFile
+    for (noBits = 0; fread(&b, 1, 1, inFile) == 1; noBits += 8)
+    {
+        printf("%02" PRIx8, b);
+    }
+
+    printf("%02" PRIx8, 0x80); // Bits: 1000 0000
+
+    for (uint64_t i = (no_zero_bytes(noBits)); i > 0; i--)
+    {
+        printf("%02" PRIx8, 0x00);
+    }
+
+    printf("%016" PRIx64 "\n", noBits);
+
+    printf("\n");
+
+    fclose(inFile);
+}
+
+// Note: Line count: 30
 void display_header()
 {
-    printf("\n");
     printf("\n------------------------------");
     // printf("\n|                         |\n");
     printf("\n|     MD5 Message Digest     |");
@@ -98,6 +161,8 @@ int main(int argc, char *argv[])
     //         uint32_t X = 0;
     //     }
     // }
+    char fileName[] = "./inputFile.txt";
+    padd_from_file(fileName);
 
     uint32_t x = IV[0];
     uint32_t y = IV[1];
