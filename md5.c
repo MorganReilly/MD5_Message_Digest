@@ -82,21 +82,25 @@ uint64_t no_zero_bytes(uint64_t no_bits)
 // Check for command line input
 void padd_from_file(char *fileName)
 {
-    FILE *inFile;
+    FILE *inFile, *outFile;
     char *mode = "rb";
-
-    // Expect command line arg
-    // if (argc != 2)
-    // {
-    //     printf("Error: expected single filename as argument\n");
-    //     return 1;
-    // }
+    char outputFileName[] = "outputPadding.txt";
 
     inFile = fopen(fileName, mode);
 
     // Error handling -- Can't open file
-    if (inFile == NULL) {
-        fprintf(stderr, "Can't open input file inputFile.txt!\n");
+    if (inFile == NULL)
+    {
+        fprintf(stderr, "Can't open / missing input file!\n");
+        exit(1);
+    }
+
+    outFile = fopen(outputFileName, "w");
+
+    // Error handling -- can't open file
+    if (outFile == NULL)
+    {
+        fprintf(stderr, "Can't open output file: %s\n", outputFileName);
         exit(1);
     }
 
@@ -110,20 +114,28 @@ void padd_from_file(char *fileName)
     for (noBits = 0; fread(&b, 1, 1, inFile) == 1; noBits += 8)
     {
         printf("%02" PRIx8, b);
+        // Write b to file here
+        fprintf(outFile, "%02" PRIx8, b);
     }
 
+    // TODO: Figure out what this is used for
     printf("%02" PRIx8, 0x80); // Bits: 1000 0000
 
     for (uint64_t i = (no_zero_bytes(noBits)); i > 0; i--)
     {
-        printf("%02" PRIx8, 0x00);
+        printf("%02" PRIx8, 0x00); // Why?
+        // Append to file
+        fprintf(outFile, "%02" PRIx8, 0x00);
     }
 
-    printf("%016" PRIx64 "\n", noBits);
+    printf("%016" PRIx64 "\n", noBits); // Write this to file ?
+    fprintf(outFile, "%016" PRIx64 "\n", noBits);
 
     printf("\n");
 
+    // Close files
     fclose(inFile);
+    fclose(outFile);
 }
 
 // Note: Line count: 30
@@ -161,8 +173,10 @@ int main(int argc, char *argv[])
     //         uint32_t X = 0;
     //     }
     // }
-    char fileName[] = "./inputFile.txt";
-    padd_from_file(fileName);
+    // char fileName[] = "./inputFile.txt";
+    padd_from_file(argv[1]);
+
+    // Read in padded string from file here ? 
 
     uint32_t x = IV[0];
     uint32_t y = IV[1];
