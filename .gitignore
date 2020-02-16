@@ -2,6 +2,8 @@ md5
 .idea
 CMakeLists.txt
 cmake-build-debug/
+inputFile.txt
+outputPadding.txt
 
 # Prerequisites
 *.d
