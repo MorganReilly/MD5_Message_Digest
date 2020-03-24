@@ -30,18 +30,42 @@
 
 // Symbols and Operations --> See Reference [6] Section 2.2.2
 
+#pragma region IMPORTS
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h> // Includes formatters for printf
+#pragma endregion
 
+#pragma region PREPROCESSING SETUP
+// Preprocessing
+// Create union 512int blocks
+union block {
+    uint64_t sixfour[8];   // 64 * 8 = 512 -- 8 64bit intger array
+    uint32_t threetwo[16]; // 32 * 16 = 512 -- 16 32bit integer array
+    uint8_t eight[64];     // 8 * 64 = 512 -- 64 8bit integer array
+};
+#pragma endregion
+
+#pragma region PARSE STATUS
+// Represent current parse status
+enum flag
+{
+    READ, // Not EOF -- Read OG file
+    PAD0, // Pad with 0's
+    FINISH
+};
+#pragma endregion
+
+#pragma region CONSTANTS DECLARATION
 // Constants definition -- Based on MD4 -- ([1]Section 9.49)
 // Four word buffer --> A,B,C,D
 const uint32_t IV[] = {0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476};
+#pragma endregion
 
+#pragma region AUXILLARY FUNCTIONS
 // -- Auxillary Functions --
 // Input 3 32-bit words --> Produce as output one 32-bit word
-
 // Function Declaratin -- Reference [4]
 uint32_t F(uint32_t x, uint32_t y, uint32_t z)
 {
@@ -65,6 +89,7 @@ uint32_t I(uint32_t x, uint32_t y, uint32_t z)
 {
     return (y ^ (x | ~z));
 }
+#pragma endregion
 
 // Check number of zero bytes
 uint64_t no_zero_bytes(uint64_t no_bits)
@@ -77,6 +102,53 @@ uint64_t no_zero_bytes(uint64_t no_bits)
     res -= 72;
 
     return (res / 8ULL);
+}
+
+// nextblock -- next hashing block
+// Read from infile, into M, keeping track of number of bits
+// it has currently read.
+int nextblock(union block *M, FILE *infile, uint64_t *nobits, enum flag *status)
+{
+    // check current status
+    if (*status == FINISH)
+        return 0; // break out of while in main()
+
+    // Check if block of zeros
+    if (*status == PAD0){
+        for (int i = 0; i < 56; i++)
+            M->eight[i] = 0;
+        M->sixfour[7] = *nobits;
+        *status = FINISH;
+        return 1;
+    }
+
+    // Assume nobits set to 0 -- starts still by default
+    size_t nobytesread = fread(M->eight, 1, 64, infile); // read into 8bit message block, 1byte, 64times, filehandler
+
+    // Try to read 64 bytes from file
+    if (nobytesread == 64)
+        return 1;
+    
+    // Check now if there's enough room left in block to do all padding.
+    // Need 8 bytes for 64 bit intger and a byte to stick 1 into.
+
+    // Can still fit padding in last block, do:
+    if (nobytesread < 56){
+        M->eight[nobytesread] = 0x80; // will be position of where to put 1 bit in byte
+        for (int i = nobytesread + 1; i < 56; i++)
+            M->eight[i] = 0;
+        M->sixfour[7] = *nobits;
+        *status = FINISH;
+        return 1;
+    }
+
+    // Otherwise have read: >= 56 && < 64 bytes from file
+    // Need to pad with 0's
+    M->eight[nobytesread] = 0x80;
+    for (int i = nobytesread + 1; i < 64; i++)
+        M->eight[i] = 0;
+    *status = PAD0;
+    return 1;
 }
 
 // Check for command line input
@@ -114,7 +186,6 @@ void padd_from_file(char *fileName)
     for (noBits = 0; fread(&b, 1, 1, inFile) == 1; noBits += 8)
     {
         printf("%02" PRIx8, b);
-        // Write b to file here
         fprintf(outFile, "%02" PRIx8, b);
     }
 
@@ -123,12 +194,12 @@ void padd_from_file(char *fileName)
 
     for (uint64_t i = (no_zero_bytes(noBits)); i > 0; i--)
     {
-        printf("%02" PRIx8, 0x00); // Why?
-        // Append to file
+        printf("%02" PRIx8, 0x00); // Print value of 0x00
+        // Append to file value of 0x00
         fprintf(outFile, "%02" PRIx8, 0x00);
     }
 
-    printf("%016" PRIx64 "\n", noBits); // Write this to file ?
+    printf("%016" PRIx64 "\n", noBits);
     fprintf(outFile, "%016" PRIx64 "\n", noBits);
 
     printf("\n");
@@ -176,7 +247,7 @@ int main(int argc, char *argv[])
     // char fileName[] = "./inputFile.txt";
     padd_from_file(argv[1]);
 
-    // Read in padded string from file here ? 
+    // Read in padded string from file here ?
 
     uint32_t x = IV[0];
     uint32_t y = IV[1];
