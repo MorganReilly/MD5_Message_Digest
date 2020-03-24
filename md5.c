@@ -60,35 +60,33 @@ enum flag
 #pragma region CONSTANTS DECLARATION
 // Constants definition -- Based on MD4 -- ([1]Section 9.49)
 // Four word buffer --> A,B,C,D
-const uint32_t IV[] = {0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476};
+const uint32_t IV[] = {0x67452301,  // A
+                       0xefcdab89,  // B
+                       0x98badcfe,  // C
+                       0x10325476}; // D
 #pragma endregion
 
 #pragma region AUXILLARY FUNCTIONS
 // -- Auxillary Functions --
 // Input 3 32-bit words --> Produce as output one 32-bit word
 // Function Declaratin -- Reference [4]
-uint32_t F(uint32_t x, uint32_t y, uint32_t z)
-{
-    return (x & y) | (~x & z);
-}
+// F acts as conditional: if X then Y else Z
+#define F(x,y,z) (((x) & (y)) | ((~x) & (z)))
+
+//NOTE: G,H,I act in "bitwise parallel" to produce output from bits of X, Y, Z
 
 // Function Declaration -- Reference [4]
-uint32_t G(uint32_t x, uint32_t y, uint32_t z)
-{
-    return (x & y) | (y & ~z);
-}
+#define G(x, y, z) (((x) & (z)) | ((y) & (~z)))
 
 // Function Declaration -- Reference [4]
-uint32_t H(uint32_t x, uint32_t y, uint32_t z)
-{
-    return (x ^ y ^ z);
-}
+#define H(x, y, z) ((x) ^ (y) ^ (z))
 
 // Function Declaration -- Reference [4]
-uint32_t I(uint32_t x, uint32_t y, uint32_t z)
-{
-    return (y ^ (x | ~z));
-}
+#define I(x, y, z) ((y) ^ ((x) | (~z)))
+
+// Function to rotate x left n bits
+#define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32-(n))))
+
 #pragma endregion
 
 // Check number of zero bytes
@@ -114,7 +112,8 @@ int nextblock(union block *M, FILE *infile, uint64_t *nobits, enum flag *status)
         return 0; // break out of while in main()
 
     // Check if block of zeros
-    if (*status == PAD0){
+    if (*status == PAD0)
+    {
         for (int i = 0; i < 56; i++)
             M->eight[i] = 0;
         M->sixfour[7] = *nobits;
@@ -128,12 +127,13 @@ int nextblock(union block *M, FILE *infile, uint64_t *nobits, enum flag *status)
     // Try to read 64 bytes from file
     if (nobytesread == 64)
         return 1;
-    
+
     // Check now if there's enough room left in block to do all padding.
     // Need 8 bytes for 64 bit intger and a byte to stick 1 into.
 
     // Can still fit padding in last block, do:
-    if (nobytesread < 56){
+    if (nobytesread < 56)
+    {
         M->eight[nobytesread] = 0x80; // will be position of where to put 1 bit in byte
         for (int i = nobytesread + 1; i < 56; i++)
             M->eight[i] = 0;
@@ -149,6 +149,14 @@ int nextblock(union block *M, FILE *infile, uint64_t *nobits, enum flag *status)
         M->eight[i] = 0;
     *status = PAD0;
     return 1;
+}
+
+// Next Hash
+// Taking a block M, and calculating next block H
+int nexthash(union block *M, uint32_t *H){
+    // Section 3.4, reference[5]
+    uint32_t W[64];
+    uint32_t
 }
 
 // Check for command line input
