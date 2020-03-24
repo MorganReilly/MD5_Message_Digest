@@ -12,6 +12,7 @@
 // [6] https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
 // [7] https://www.geeksforgeeks.org/bitwise-operators-in-c-cpp/
 // [8] https://www.cs.bu.edu/teaching/c/file-io/intro/ -- File IO
+// [9] https://dev.w3.org/libwww/modules/md5/md5.c
 // About MD5:
 // MD5 was designed as a strengthened version of MD4, prior to actual MD4 collisions being found.
 // MD5 is obtained from MD4 by making modifications.
@@ -69,11 +70,12 @@ const uint32_t IV[] = {0x67452301,  // A
 #pragma region AUXILLARY FUNCTIONS
 // -- Auxillary Functions --
 // Input 3 32-bit words --> Produce as output one 32-bit word
-// Function Declaratin -- Reference [4]
 // F acts as conditional: if X then Y else Z
-#define F(x,y,z) (((x) & (y)) | ((~x) & (z)))
+// G,H,I act in "bitwise parallel" to produce output from bits of X, Y, Z
 
-//NOTE: G,H,I act in "bitwise parallel" to produce output from bits of X, Y, Z
+// Function Declaratin -- Reference [4]
+// Also adapted from reference [9] (which is the code part of reference [5])
+#define F(x, y, z) (((x) & (y)) | ((~x) & (z)))
 
 // Function Declaration -- Reference [4]
 #define G(x, y, z) (((x) & (z)) | ((y) & (~z)))
@@ -85,7 +87,37 @@ const uint32_t IV[] = {0x67452301,  // A
 #define I(x, y, z) ((y) ^ ((x) | (~z)))
 
 // Function to rotate x left n bits
-#define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32-(n))))
+#define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
+
+// Function FF, GG, HH, II are transformations for rounds 1, 2, 3, 4.
+// Function FF -- Reference [9]
+#define FF(a, b, c, d, x, s, ac)                     \
+    {                                                \
+        (a) += F((b), (c), (d)) + (x) + (UINT4)(ac); \
+        (a) = ROTATE_LEFT((a), (s));                 \
+        (a) += (b);                                  \
+    }
+// Function GG -- Reference [9]
+#define GG(a, b, c, d, x, s, ac)                     \
+    {                                                \
+        (a) += G((b), (c), (d)) + (x) + (UINT4)(ac); \
+        (a) = ROTATE_LEFT((a), (s));                 \
+        (a) += (b);                                  \
+    }
+// Function HH -- Reference [9]
+#define HH(a, b, c, d, x, s, ac)                     \
+    {                                                \
+        (a) += H((b), (c), (d)) + (x) + (UINT4)(ac); \
+        (a) = ROTATE_LEFT((a), (s));                 \
+        (a) += (b);                                  \
+    }
+// Function II -- Refernce [9]
+#define II(a, b, c, d, x, s, ac)                     \
+    {                                                \
+        (a) += I((b), (c), (d)) + (x) + (UINT4)(ac); \
+        (a) = ROTATE_LEFT((a), (s));                 \
+        (a) += (b);                                  \
+    }
 
 #pragma endregion
 
@@ -153,10 +185,35 @@ int nextblock(union block *M, FILE *infile, uint64_t *nobits, enum flag *status)
 
 // Next Hash
 // Taking a block M, and calculating next block H
-int nexthash(union block *M, uint32_t *H){
+int nexthash(union block *M, uint32_t *H)
+{
     // Section 3.4, reference[5]
     uint32_t W[64];
-    uint32_t
+    uint32_t A, AA, B, BB, C, CC, D, DD;
+    A = IV[0];
+    B = IV[1];
+    C = IV[2];
+    D = IV[3]; // Setting constants
+
+    // For each 16 word block
+    for (int i = 0; i < 16 - 1; i++)
+    {
+        // Copy block i into W
+        for (int j = 0; j < 16; j++)
+        {
+            W[j] = M->threetwo[i * 16 + j];
+        }
+
+        // Save A as AA, B as BB, c as CC, D as DD
+        AA = A;
+        BB = B;
+        CC = C;
+        DD = D;
+
+        // Round 1
+        // Let [abcd k s i] denote operation:
+        // a = b + ((a + F(b,c,d) + X[k] + T[i]) <<< s)
+    }
 }
 
 // Check for command line input
