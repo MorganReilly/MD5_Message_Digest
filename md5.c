@@ -4,41 +4,30 @@
 // -- MD5 Message Digest Algorithm --
 
 // References:
-// [1] http://cacr.uwaterloo.ca/hac/about/chap9.pdf
-// [2] https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
-// [3] https://www.iusmentis.com/technology/hashfunctions/md5/
-// [4] http://practicalcryptography.com/hashes/md5-hash/
-// [5] https://www.ietf.org/rfc/rfc1321.txt
-// [6] https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
-// [7] https://www.geeksforgeeks.org/bitwise-operators-in-c-cpp/
+// [1] http://cacr.uwaterloo.ca/hac/about/chap9.pdf -- HandBook of Applied Cryptography, Chapter 9.49
+// [2] https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf -- SHA256 Specification
+// [3] https://www.iusmentis.com/technology/hashfunctions/md5/ -- MD5 Diagram (Block Processing)
+// [4] http://practicalcryptography.com/hashes/md5-hash/ -- MD5 Specification
+// [5] https://www.ietf.org/rfc/rfc1321.txt -- MD5 Specification
+// [7] https://www.geeksforgeeks.org/bitwise-operators-in-c-cpp/ -- Bitwise Operations
 // [8] https://www.cs.bu.edu/teaching/c/file-io/intro/ -- File IO
-// [9] https://dev.w3.org/libwww/modules/md5/md5.c
+// [9] https://dev.w3.org/libwww/modules/md5/md5.c -- MD5 Code
+// [10] https://code.woboq.org/linux/linux/crypto/md4.c.html -- MD4 code -- used for helping me understand the rounds
+// [11] http://www.herongyang.com/Cryptography/MD5-Message-Digest-Algorithm-Overview.html
+
 // About MD5:
 // MD5 was designed as a strengthened version of MD4, prior to actual MD4 collisions being found.
 // MD5 is obtained from MD4 by making modifications.
 // These changes will be outlined in this project where implemented.
 // MD5 operates on 32-bit words.
 
-// Terminology -- Reference [5 (2)]:
-// word: 32-bit quantity
-// byte: 8-bit quantity
-// x_i : x sub i
-
-// Algorithm Steps (Overview) -- Reference [5 (3)]:
-// Step 1: Append Padding Bits
-// Step 2: Append Length
-// Step 3:
-
 // Symbols and Operations --> See Reference [6] Section 2.2.2
 
-#pragma region IMPORTS
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h> // Includes formatters for printf
-#pragma endregion
 
-#pragma region PREPROCESSING SETUP
 // Preprocessing
 // Create union 512int blocks
 union block {
@@ -46,9 +35,7 @@ union block {
     uint32_t threetwo[16]; // 32 * 16 = 512 -- 16 32bit integer array
     uint8_t eight[64];     // 8 * 64 = 512 -- 64 8bit integer array
 };
-#pragma endregion
 
-#pragma region PARSE STATUS
 // Represent current parse status
 enum flag
 {
@@ -56,18 +43,13 @@ enum flag
     PAD0, // Pad with 0's
     FINISH
 };
-#pragma endregion
 
-#pragma region CONSTANTS DECLARATION
-// Constants definition -- Based on MD4 -- ([1]Section 9.49)
-// Four word buffer --> A,B,C,D
-const uint32_t IV[] = {0x67452301,  // A
-                       0xefcdab89,  // B
-                       0x98badcfe,  // C
-                       0x10325476}; // D
-#pragma endregion
+// Constant definitiion
+const uint32_t A = 0x67452301;
+const uint32_t B = 0xefcdab89;
+const uint32_t C = 0x98badcfe;
+const uint32_t D = 0x10325476;
 
-#pragma region AUXILLARY FUNCTIONS
 // -- Auxillary Functions --
 // Input 3 32-bit words --> Produce as output one 32-bit word
 // F acts as conditional: if X then Y else Z
@@ -75,64 +57,45 @@ const uint32_t IV[] = {0x67452301,  // A
 
 // Function Declaratin -- Reference [4]
 // Also adapted from reference [9] (which is the code part of reference [5])
-#define F(x, y, z) (((x) & (y)) | ((~x) & (z)))
+uint32_t F(X, Y, Z) { return (((X) & (Y)) | ((~X) & (Z))); }
 
 // Function Declaration -- Reference [4]
-#define G(x, y, z) (((x) & (z)) | ((y) & (~z)))
+uint32_t G(X, Y, Z) { return (((X) & (Y)) | ((Y) & (~Z))); }
 
 // Function Declaration -- Reference [4]
-#define H(x, y, z) ((x) ^ (y) ^ (z))
+uint32_t H(X, Y, Z) { return ((X) ^ (Y) ^ (Z)); }
 
 // Function Declaration -- Reference [4]
-#define I(x, y, z) ((y) ^ ((x) | (~z)))
+uint32_t I(X, Y, Z) { return ((X) ^ ((Y) | (~Z))); }
 
 // Function to rotate x left n bits
-#define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
+uint32_t lshift(x, n) { return (((x) << (n)) | ((x) >> (32 - (n)))); }
 
-// Function FF, GG, HH, II are transformations for rounds 1, 2, 3, 4.
-// Function FF -- Reference [9]
-#define FF(a, b, c, d, x, s, ac)                     \
-    {                                                \
-        (a) += F((b), (c), (d)) + (x) + (UINT4)(ac); \
-        (a) = ROTATE_LEFT((a), (s));                 \
-        (a) += (b);                                  \
-    }
-// Function GG -- Reference [9]
-#define GG(a, b, c, d, x, s, ac)                     \
-    {                                                \
-        (a) += G((b), (c), (d)) + (x) + (UINT4)(ac); \
-        (a) = ROTATE_LEFT((a), (s));                 \
-        (a) += (b);                                  \
-    }
-// Function HH -- Reference [9]
-#define HH(a, b, c, d, x, s, ac)                     \
-    {                                                \
-        (a) += H((b), (c), (d)) + (x) + (UINT4)(ac); \
-        (a) = ROTATE_LEFT((a), (s));                 \
-        (a) += (b);                                  \
-    }
-// Function II -- Refernce [9]
-#define II(a, b, c, d, x, s, ac)                     \
-    {                                                \
-        (a) += I((b), (c), (d)) + (x) + (UINT4)(ac); \
-        (a) = ROTATE_LEFT((a), (s));                 \
-        (a) += (b);                                  \
-    }
+// The table
+// Pregenerated by using sin function:
+// abs(sin(i + 1)) × 2^32
+const uint32_t K[] = {0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
+                      0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
+                      0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
+                      0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
+                      0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
+                      0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
+                      0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
+                      0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
+                      0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
+                      0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
+                      0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
+                      0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
+                      0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
+                      0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
+                      0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
+                      0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391};
 
-#pragma endregion
-
-// Check number of zero bytes
-uint64_t no_zero_bytes(uint64_t no_bits)
-{
-    uint64_t res = 512 - (no_bits % 512ULL);
-
-    if (res < 65)
-        res += 512;
-
-    res -= 72;
-
-    return (res / 8ULL);
-}
+// Rounds definition
+#define ROUND1(a, b, c, d, k, s, i) (a = b + (lshift(a + F(b,c,d)+ X[k] + T[i])))
+#define ROUND2(a, b, c, d, k, s, i) (a = b + (lshift(a + G(b,c,d)+ X[k] + T[i])))
+#define ROUND3(a, b, c, d, k, s, i) (a = b + (lshift(a + H(b,c,d)+ X[k] + T[i])))
+#define ROUND4(a, b, c, d, k, s, i) (a = b + (lshift(a + I(b,c,d)+ X[k] + T[i])))
 
 // nextblock -- next hashing block
 // Read from infile, into M, keeping track of number of bits
@@ -187,32 +150,13 @@ int nextblock(union block *M, FILE *infile, uint64_t *nobits, enum flag *status)
 // Taking a block M, and calculating next block H
 int nexthash(union block *M, uint32_t *H)
 {
-    // Section 3.4, reference[5]
-    uint32_t W[64];
-    uint32_t A, AA, B, BB, C, CC, D, DD;
-    A = IV[0];
-    B = IV[1];
-    C = IV[2];
-    D = IV[3]; // Setting constants
+    uint32_t AA, BB, CC, DD;
+    uint32_t N; 
 
-    // For each 16 word block
-    for (int i = 0; i < 16 - 1; i++)
-    {
-        // Copy block i into W
-        for (int j = 0; j < 16; j++)
-        {
-            W[j] = M->threetwo[i * 16 + j];
+    for (int i = 0; i<32/16-1; i++){
+        for (int j = 0; j <= 15; j++){
+            X[j] = *M[i*16+j];
         }
-
-        // Save A as AA, B as BB, c as CC, D as DD
-        AA = A;
-        BB = B;
-        CC = C;
-        DD = D;
-
-        // Round 1
-        // Let [abcd k s i] denote operation:
-        // a = b + ((a + F(b,c,d) + X[k] + T[i]) <<< s)
     }
 }
 
@@ -290,7 +234,53 @@ void display_header()
 
 int main(int argc, char *argv[])
 {
-    display_header();
+    // display_header();
+
+    // // Expect command line arg
+    // if (argc != 2)
+    // {
+    //     printf("Error: expected single filename as argument\n");
+    //     return 1;
+    // }
+
+    // FILE *infile = fopen(argv[1], "rb");
+
+    // // Error handling -- Can't open file
+    // if (!infile)
+    // {
+    //     printf("Error: couldn't open file %s. \n", argv[1]);
+    //     return 1;
+    // }
+
+    // // Define initial hash values
+    // uint32_t IVs[] = {0x67452301,  // A
+    //                   0xefcdab89,  // B
+    //                   0x98badcfe,  // C
+    //                   0x10325476}; // D
+
+    // // nextblock params
+    // union block M;
+    // uint64_t nobits = 0;
+    // enum flag status = READ;
+    // // Read through all of the padded message blocks.
+    // // When reading into the block -> Do in 8-bits
+    // while (nextblock(&M, infile, &nobits, &status))
+    // {
+    //     // Calculate next Hash value of M, hash value of H
+    //     // Passing as address
+    //     // Using values in array --> Do in 32-bits
+    //     //nexthash(&M, IVs);
+    // }
+
+    // for (int i = 0; i < 8; i++)
+    // {
+    //     printf("%02" PRIX32, IVs[i]);
+    //     // printf("\n");
+    // }
+
+    // fclose(infile);
+
+    // return 0;
 
     // Let M = Message to be hashed
     // M should be padded so that length = 448 % 512
@@ -310,22 +300,22 @@ int main(int argc, char *argv[])
     //     }
     // }
     // char fileName[] = "./inputFile.txt";
-    padd_from_file(argv[1]);
+    // padd_from_file(argv[1]);
 
-    // Read in padded string from file here ?
+    // // Read in padded string from file here ?
 
-    uint32_t x = IV[0];
-    uint32_t y = IV[1];
-    uint32_t z = IV[2];
+    // uint32_t x = IV[0];
+    // uint32_t y = IV[1];
+    // uint32_t z = IV[2];
 
-    printf("x  IV[0]            = %08x\n", IV[0]);
-    printf("y  IV[1]            = %08x\n", IV[1]);
-    printf("z  IV[2]            = %08x\n", IV[2]);
+    // printf("x  IV[0]            = %08x\n", IV[0]);
+    // printf("y  IV[1]            = %08x\n", IV[1]);
+    // printf("z  IV[2]            = %08x\n", IV[2]);
 
-    printf("F(x,y,z)            = %08x\n", F(IV[0], IV[1], IV[2]));
-    printf("G(x,y,z)            = %08x\n", G(IV[0], IV[1], IV[2]));
-    printf("H(x,y,z)            = %08x\n", H(IV[0], IV[1], IV[2]));
-    printf("I(x,y,z)            = %08x\n", I(IV[0], IV[1], IV[2]));
-
+    // printf("F(x,y,z)            = %08x\n", F(IV[0], IV[1], IV[2]));
+    // printf("G(x,y,z)            = %08x\n", G(IV[0], IV[1], IV[2]));
+    // printf("H(x,y,z)            = %08x\n", H(IV[0], IV[1], IV[2]));
+    // printf("I(x,y,z)            = %08x\n", I(IV[0], IV[1], IV[2]));
+    T_Gen();
     return 0;
 }
