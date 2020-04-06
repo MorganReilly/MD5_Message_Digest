@@ -14,11 +14,11 @@
 * `$ ./md5 <file_name>`
 
 #### References
-* 1: [http://cacr.uwaterloo.ca/hac/about/chap9.pdf](HandBook of Applied Cryptography, Chapter 9.49)
-* 2: [https://www.iusmentis.com/technology/hashfunctions/md5/](MD5 Diagram - Block Processing)
-* 3: [http://practicalcryptography.com/hashes/md5-hash/](MD5 Specification)
-* 4: [https://www.ietf.org/rfc/rfc1321.txt](MD5 Specification)
-* 5: [https://www.geeksforgeeks.org/bitwise-operators-in-c-cpp/](Bitwise Operations)
-* 6: [https://code.woboq.org/linux/linux/crypto/md4.c.html](MD4 code -- used for helping me understand the rounds)
-* 7: [http://www.herongyang.com/Cryptography/MD5-Message-Digest-Algorithm-Overview.html](MD5 Algorithm Overview)
-* 8: [https://cs.indstate.edu/~fsagar/doc/paper.pdf](Cryptographic Hashing Functions - MD5)
+* 1: [HandBook of Applied Cryptography, Chapter 9.49](http://cacr.uwaterloo.ca/hac/about/chap9.pdf)
+* 2: [MD5 Diagram - Block Processing](https://www.iusmentis.com/technology/hashfunctions/md5/)
+* 3: [MD5 Specification](http://practicalcryptography.com/hashes/md5-hash/)
+* 4: [MD5 Specification](https://www.ietf.org/rfc/rfc1321.txt)
+* 5: [Bitwise Operations](https://www.geeksforgeeks.org/bitwise-operators-in-c-cpp/)
+* 6: [MD4 code -- used for helping me understand the rounds](https://code.woboq.org/linux/linux/crypto/md4.c.html)
+* 7: [MD5 Algorithm Overview](http://www.herongyang.com/Cryptography/MD5-Message-Digest-Algorithm-Overview.html)
+* 8: [Cryptographic Hashing Functions - MD5](https://cs.indstate.edu/~fsagar/doc/paper.pdf)
