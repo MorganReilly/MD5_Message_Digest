@@ -5,6 +5,7 @@ CMakeLists.txt
 cmake-build-debug/
 inputFile.txt
 outputPadding.txt
+empty
 
 # Prerequisites
 *.d
