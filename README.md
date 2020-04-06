@@ -11,7 +11,7 @@
 * To Compile program, run: 
 * `$ make md5`
 * To Run program, run:
-* `./md5 <file_name>`
+* `$ ./md5 <file_name>`
 
 #### References
 * 1: [http://cacr.uwaterloo.ca/hac/about/chap9.pdf](HandBook of Applied Cryptography, Chapter 9.49)
