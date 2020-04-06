@@ -23,6 +23,24 @@
 #include <inttypes.h>
 #include <endian.h>
 
+// Define constants for MD5 transform
+#define S11 7
+#define S12 12
+#define S13 17
+#define S14 22
+#define S21 5
+#define S22 9
+#define S23 14
+#define S24 20
+#define S31 4
+#define S32 11
+#define S33 16
+#define S34 23
+#define S41 6
+#define S42 10
+#define S43 15
+#define S44 21
+
 // Definition of a four byte word
 typedef unsigned long int UINT4;
 // Defintion of a word - R[3]: 2. Terminology and Notation
@@ -92,6 +110,11 @@ const uint32_t T[] = {0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
         (a) += (b);                                  \
     }
 
+#define MD5_DIGEST_SIZE 16
+#define MD5_HMAC_BLOCK_SIZE 64
+#define MD5_BLOCK_WORDS 16
+#define MD5_HASH_WORDS 4
+
 // Preprocessing
 // Create union 512int blocks
 typedef union {
@@ -99,6 +122,15 @@ typedef union {
     uint32_t threetwo[16]; // 32 * 16 = 512 -- 16 32bit integer array
     uint8_t eight[64];     // 8 * 64 = 512 -- 64 8bit integer array
 } BLOCK;
+
+// Struct to handle md5 data types
+// Reference [10]
+struct md5_ctx
+{
+    uint32_t hash[MD5_HASH_WORDS];
+    uint32_t block[MD5_BLOCK_WORDS];
+    uint64_t byte_count;
+};
 
 // Represent current parse status
 typedef enum
@@ -110,105 +142,105 @@ typedef enum
 
 // Next Hash
 // Taking a block M, and calculating next block H
-int nexthash(WORD *M, WORD *Hash)
+int md5_transform(uint32_t *hash, uint32_t const *x)
 {
-    uint32_t A, B, C, D, x[16];
-    A = Hash[0];
-    B = Hash[1];
-    C = Hash[2];
-    D = Hash[3];
+    uint32_t A, B, C, D;
+    A = hash[0];
+    B = hash[1];
+    C = hash[2];
+    D = hash[3];
 
     // Round Declaration -- Reference [4]
     // Round 1 -- FF
-    FF(A, B, C, D, x[0], 7, T[0]);
-    FF(D, A, B, C, x[1], 12, T[1]);
-    FF(C, D, A, B, x[2], 17, T[2]);
-    FF(B, C, D, A, x[3], 22, T[3]);
+    FF(A, B, C, D, x[0], S11, T[0]);
+    FF(D, A, B, C, x[1], S12, T[1]);
+    FF(C, D, A, B, x[2], S13, T[2]);
+    FF(B, C, D, A, x[3], S14, T[3]);
 
-    FF(A, B, C, D, x[4], 7, T[4]);
-    FF(D, A, B, C, x[5], 12, T[5]);
-    FF(C, D, A, B, x[6], 17, T[6]);
-    FF(B, C, D, A, x[7], 22, T[7]);
+    FF(A, B, C, D, x[4], S11, T[4]);
+    FF(D, A, B, C, x[5], S12, T[5]);
+    FF(C, D, A, B, x[6], S13, T[6]);
+    FF(B, C, D, A, x[7], S14, T[7]);
 
-    FF(A, B, C, D, x[8], 7, T[8]);
-    FF(D, A, B, C, x[9], 12, T[9]);
-    FF(C, D, A, B, x[10], 17, T[10]);
-    FF(B, C, D, A, x[11], 22, T[11]);
+    FF(A, B, C, D, x[8], S11, T[8]);
+    FF(D, A, B, C, x[9], S12, T[9]);
+    FF(C, D, A, B, x[10], S13, T[10]);
+    FF(B, C, D, A, x[11], S14, T[11]);
 
-    FF(A, B, C, D, x[12], 7, T[12]);
-    FF(D, A, B, C, x[13], 12, T[13]);
-    FF(C, D, A, B, x[14], 17, T[14]);
-    FF(B, C, D, A, x[15], 22, T[15]);
+    FF(A, B, C, D, x[12], S11, T[12]);
+    FF(D, A, B, C, x[13], S12, T[13]);
+    FF(C, D, A, B, x[14], S13, T[14]);
+    FF(B, C, D, A, x[15], S14, T[15]);
 
     // Round 2 -- GG
-    GG(A, B, C, D, x[1], 5, T[16]);
-    GG(D, A, B, C, x[6], 9, T[17]);
-    GG(C, D, A, B, x[11], 14, T[18]);
-    GG(B, C, D, A, x[0], 20, T[19]);
+    GG(A, B, C, D, x[1], S21, T[16]);
+    GG(D, A, B, C, x[6], S22, T[17]);
+    GG(C, D, A, B, x[11], S23, T[18]);
+    GG(B, C, D, A, x[0], S24, T[19]);
 
-    GG(A, B, C, D, x[5], 5, T[20]);
-    GG(D, A, B, C, x[10], 9, T[21]);
-    GG(C, D, A, B, x[15], 14, T[22]);
-    GG(B, C, D, A, x[4], 20, T[23]);
+    GG(A, B, C, D, x[5], S21, T[20]);
+    GG(D, A, B, C, x[10], S22, T[21]);
+    GG(C, D, A, B, x[15], S23, T[22]);
+    GG(B, C, D, A, x[4], S24, T[23]);
 
-    GG(A, B, C, D, x[9], 5, T[24]);
-    GG(D, A, B, C, x[14], 9, T[25]);
-    GG(C, D, A, B, x[3], 14, T[26]);
-    GG(B, C, D, A, x[8], 20, T[27]);
+    GG(A, B, C, D, x[9], S21, T[24]);
+    GG(D, A, B, C, x[14], S22, T[25]);
+    GG(C, D, A, B, x[3], S23, T[26]);
+    GG(B, C, D, A, x[8], S24, T[27]);
 
-    GG(A, B, C, D, x[13], 5, T[28]);
-    GG(D, A, B, C, x[2], 9, T[29]);
-    GG(C, D, A, B, x[7], 14, T[30]);
-    GG(B, C, D, A, x[12], 20, T[31]);
+    GG(A, B, C, D, x[13], S21, T[28]);
+    GG(D, A, B, C, x[2], S22, T[29]);
+    GG(C, D, A, B, x[7], S23, T[30]);
+    GG(B, C, D, A, x[12], S24, T[31]);
 
     // Round 3 -- HH
-    HH(A, B, C, D, x[5], 4, T[32]);
-    HH(A, B, C, D, x[8], 11, T[33]);
-    HH(A, B, C, D, x[11], 16, T[34]);
-    HH(A, B, C, D, x[14], 23, T[35]);
+    HH(A, B, C, D, x[5], S31, T[32]);
+    HH(A, B, C, D, x[8], S32, T[33]);
+    HH(A, B, C, D, x[11], S33, T[34]);
+    HH(A, B, C, D, x[14], S34, T[35]);
 
-    HH(A, B, C, D, x[1], 4, T[36]);
-    HH(A, B, C, D, x[4], 11, T[37]);
-    HH(A, B, C, D, x[7], 16, T[38]);
-    HH(A, B, C, D, x[10], 23, T[39]);
+    HH(A, B, C, D, x[1], S31, T[36]);
+    HH(A, B, C, D, x[4], S32, T[37]);
+    HH(A, B, C, D, x[7], S33, T[38]);
+    HH(A, B, C, D, x[10], S34, T[39]);
 
-    HH(A, B, C, D, x[13], 4, T[40]);
-    HH(A, B, C, D, x[0], 11, T[41]);
-    HH(A, B, C, D, x[3], 16, T[42]);
-    HH(A, B, C, D, x[6], 23, T[43]);
+    HH(A, B, C, D, x[13], S31, T[40]);
+    HH(A, B, C, D, x[0], S32, T[41]);
+    HH(A, B, C, D, x[3], S33, T[42]);
+    HH(A, B, C, D, x[6], S34, T[43]);
 
-    HH(A, B, C, D, x[9], 4, T[44]);
-    HH(A, B, C, D, x[12], 11, T[45]);
-    HH(A, B, C, D, x[15], 16, T[46]);
-    HH(A, B, C, D, x[2], 23, T[47]);
+    HH(A, B, C, D, x[9], S31, T[44]);
+    HH(A, B, C, D, x[12], S32, T[45]);
+    HH(A, B, C, D, x[15], S33, T[46]);
+    HH(A, B, C, D, x[2], S34, T[47]);
 
     // Round 4 -- II
-    II(A, B, C, D, x[0], 6, T[48]);
-    II(A, B, C, D, x[7], 10, T[49]);
-    II(A, B, C, D, x[14], 15, T[50]);
-    II(A, B, C, D, x[5], 21, T[51]);
+    II(A, B, C, D, x[0], S41, T[48]);
+    II(A, B, C, D, x[7], S42, T[49]);
+    II(A, B, C, D, x[14], S43, T[50]);
+    II(A, B, C, D, x[5], S44, T[51]);
 
-    II(A, B, C, D, x[12], 6, T[52]);
-    II(A, B, C, D, x[3], 10, T[53]);
-    II(A, B, C, D, x[10], 15, T[54]);
-    II(A, B, C, D, x[1], 21, T[55]);
+    II(A, B, C, D, x[12], S41, T[52]);
+    II(A, B, C, D, x[3], S42, T[53]);
+    II(A, B, C, D, x[10], S43, T[54]);
+    II(A, B, C, D, x[1], S44, T[55]);
 
-    II(A, B, C, D, x[8], 6, T[56]);
-    II(A, B, C, D, x[15], 10, T[57]);
-    II(A, B, C, D, x[6], 15, T[58]);
-    II(A, B, C, D, x[13], 21, T[59]);
+    II(A, B, C, D, x[8], S41, T[56]);
+    II(A, B, C, D, x[15], S42, T[57]);
+    II(A, B, C, D, x[6], S43, T[58]);
+    II(A, B, C, D, x[13], S44, T[59]);
 
-    II(A, B, C, D, x[4], 6, T[60]);
-    II(A, B, C, D, x[11], 10, T[61]);
-    II(A, B, C, D, x[2], 15, T[62]);
-    II(A, B, C, D, x[9], 21, T[63]);
+    II(A, B, C, D, x[4], S41, T[60]);
+    II(A, B, C, D, x[11], S42, T[61]);
+    II(A, B, C, D, x[2], S43, T[62]);
+    II(A, B, C, D, x[9], S44, T[63]);
 
     // Perform additions which incrememnt each of the four registers
     // Reference [4]
-    Hash[0] += A;
-    Hash[1] += B;
-    Hash[2] += C;
-    Hash[3] += D;
+    hash[0] += A;
+    hash[1] += B;
+    hash[2] += C;
+    hash[3] += D;
 }
 
 // nextblock -- next hashing block
@@ -275,9 +307,16 @@ void display_header()
     printf("\n");
 }
 
+void display_expected()
+{
+    printf("900150983cd24fb0d6963f7d28e17f72");
+    printf("\n");
+}
+
 int main(int argc, char *argv[])
 {
     // display_header();
+    display_expected();
 
     // Expect command line arg
     if (argc != 2)
