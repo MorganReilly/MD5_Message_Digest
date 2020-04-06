@@ -1,4 +1,5 @@
 md5
+md5runner
 .idea
 CMakeLists.txt
 cmake-build-debug/

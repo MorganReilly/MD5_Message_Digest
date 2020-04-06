@@ -1,12 +1,12 @@
-// Morgan Reilly
-// G00303598
+/* Morgan Reilly G00303598
 
-// -- MD5 Message Digest Algorithm --
-// -- Global Header --
-// Adapted from: https://www.ietf.org/rfc/rfc1321.txt
+-- MD5 Message Digest Algorithm --
+-- Global Header --
+Adapted from: https://www.ietf.org/rfc/rfc1321.txt
 
-// Section A.1 global.h
-// Set PROTOTYPES to be one, only if the compiler supports function argument prototyping
+Section A.1 global.h
+Set PROTOTYPES to be one, only if the compiler supports function argument prototyping
+*/
 
 #ifndef PROTOTYPES
 #define PROTOTYPES 0

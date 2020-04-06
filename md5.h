@@ -1,3 +1,12 @@
+/* Morgan Reilly G00303598
+
+-- MD5 Message Digest Algorithm --
+-- Global Header --
+Adapted from: https://www.ietf.org/rfc/rfc1321.txt
+
+Section A.2 (global.h)
+*/
+
 #include "global.h"
 
 /* MD5 context. */
