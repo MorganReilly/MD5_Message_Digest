@@ -25,6 +25,7 @@ Differences between signed and unsigned:
 #include <stdio.h>
 #include <inttypes.h>
 #include <endian.h>
+#include <string.h>
 
 /* Constants definition for Transformation routine
    R[4]: A.3 md5.c Page9
@@ -48,15 +49,19 @@ Differences between signed and unsigned:
 
 /* Function Declaration
    These define the function type and parameters of the functions used below
-   R[4]: A.3 md5.c Page9
+   Adapted from: R[4]: A.3 md5.c Page9
 */
-static void MD5Transform ARG_LIST((UINT4[4], unsigned char[64]));
+static void NextHash ARG_LIST((UINT4[4], unsigned char[64]));
 static void Encode ARG_LIST((unsigned char *, UINT4 *, unsigned int));
 static void Decode ARG_LIST((UINT4 *, unsigned char *, unsigned int));
-static void MD5_memcpy ARG_LIST((POINTER, POINTER, unsigned int));
-static void MD5_memset ARG_LIST((POINTER, int, unsigned int));
-static void MD5File ARG_LIST((char *));
-static void MD5Print ARG_LIST((unsigned char[16]));
+static void MemoryCopy ARG_LIST((POINTER, POINTER, unsigned int));
+static void MemorySet ARG_LIST((POINTER, int, unsigned int));
+static void GenerateFromFile ARG_LIST((char *));
+static void GenerateFromString ARG_LIST((char *));
+static void PrintMessageDigest ARG_LIST((unsigned char[16]));
+static void DisplayTestValues();
+static void DisplayMenu();
+static void DisplayOptions();
 
 /* Padding Declaration
    R[4]: A.3 md5.c Page9
@@ -134,10 +139,10 @@ const uint32_t T[] = {0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
 /* MD5 Initialisation
    This will begin a new MD5 operation, 
    with a new context to write to.
-   R[4]: A.3 md5.c Page10
+   Adapted from: R[4]: A.3 md5.c Page10
 */
-void MD5Init(context)
-    MD5_CTX *context; /* context */
+void InitialiseMD5(context)
+    CONTEXT *context; /* context */
 {
     context->bit_count[0] = context->bit_count[1] = 0;
     /* Load magic initialization constants.*/
@@ -150,10 +155,10 @@ void MD5Init(context)
 /* MD5 block update operation 
    This continues the existing md5 digest,
    processing block after block while updating the context
-   R[4]: A.3 md5.c (Page10, Page11)
+   Adapted from: R[4]: A.3 md5.c (Page10, Page11)
 */
-void MD5Update(context, input, inputLength)
-    MD5_CTX *context;     /* context */
+void NextBlock(context, input, inputLength)
+    CONTEXT *context;     /* context */
 unsigned char *input;     /* input block */
 unsigned int inputLength; /* length of input block */
 {
@@ -173,11 +178,11 @@ unsigned int inputLength; /* length of input block */
     // Transform as many times as possible
     if (inputLength >= partLen)
     {
-        MD5_memcpy((POINTER)&context->input_buffer[index], (POINTER)input, partLen);
-        MD5Transform(context->word_state, context->input_buffer);
+        MemoryCopy((POINTER)&context->input_buffer[index], (POINTER)input, partLen);
+        NextHash(context->word_state, context->input_buffer);
 
         for (i = partLen; i + 63 < inputLength; i += 64)
-            MD5Transform(context->word_state, &input[i]);
+            NextHash(context->word_state, &input[i]);
 
         index = 0;
     }
@@ -185,35 +190,35 @@ unsigned int inputLength; /* length of input block */
         i = 0;
 
     /* Buffer remaining input */
-    MD5_memcpy((POINTER)&context->input_buffer[index], (POINTER)&input[i],
+    MemoryCopy((POINTER)&context->input_buffer[index], (POINTER)&input[i],
                inputLength - i);
 }
 
-/* MD5 Finalisation
-   This ends the MD5 operation, writes the MD, zeros the context
-    R[4]: A.3 md5.c (Page11, Page12)
+/* MD5 Generation
+   Adapted from: R[4]: A.3 md5.c (Page11, Page12)
 */
-void MD5Final(digest, context) unsigned char digest[16]; /* message digest */
-MD5_CTX *context;                                        /* context */
+void GenerateMD5(digest, context) unsigned char digest[16]; /* message digest */
+CONTEXT *context;                                           /* context */
 {
     unsigned char bits[8];
     unsigned int index, padLen;
 
     // Save number of bits
     Encode(bits, context->bit_count, 8);
+
     // Pad out to 56 mod 64.
-    index = (unsigned int)((context->bit_count[0] >> 3) & 0x3f);
-    padLen = (index < 56) ? (56 - index) : (120 - index);
-    MD5Update(context, PADDING, padLen);
+    index = (unsigned int)((context->bit_count[0] >> 3) & 0x3f); // Set index
+    padLen = (index < 56) ? (56 - index) : (120 - index);        // Set padding length
+    NextBlock(context, PADDING, padLen);                         // Call update function
 
     // Append length (before padding)
-    MD5Update(context, bits, 8);
+    NextBlock(context, bits, 8);
 
     // Store state in digest
     Encode(digest, context->word_state, 16);
 
     // Zeroize sensitive information.
-    MD5_memset((POINTER)context, 0, sizeof(*context));
+    MemorySet((POINTER)context, 0, sizeof(*context));
 }
 
 /* MD5 Transform Function
@@ -221,7 +226,7 @@ MD5_CTX *context;                                        /* context */
    Taking a state, and calculating next block 
    R[4]: A.3 md5.c (Page12, Page13)
 */
-static void MD5Transform(state, block)
+static void NextHash(state, block)
     UINT4 state[4];
 unsigned char block[64];
 {
@@ -309,7 +314,7 @@ unsigned char block[64];
     state[3] += d;
 
     // Zeroise sensitive information
-    MD5_memset((POINTER)x, 0, sizeof(x));
+    MemorySet((POINTER)x, 0, sizeof(x));
 }
 
 /* Encode the input into output (UINT4  --> unsigned char) 
@@ -333,6 +338,8 @@ unsigned int len;
 
 /* Decode input into output (unsigned char --> UINT4)
    Done by assuming length is a multiple of 4
+
+   This needs to be set to little endian, output is incorrect
    R[4]: A.3 md5.c Page14
 */
 static void Decode(output, input, length)
@@ -348,90 +355,157 @@ unsigned int length;
 }
 
 /* Memory Copy
-   Note: Replace "for loop" with standard memcpy if possible.
    R[4]: A.3 md5.c Page14
 */
-static void MD5_memcpy(output, input, len)
+static void MemoryCopy(output, input, length)
     POINTER output;
 POINTER input;
-unsigned int len;
+unsigned int length;
 {
-    unsigned int i;
-
-    for (i = 0; i < len; i++)
-        output[i] = input[i];
+    memcpy(output, input, length);
 }
 
 /* Memory Set
-   Note: Replace "for loop" with standard memcpy if possible.
    R[4]: A.3 md5.c Page15
 */
-static void MD5_memset(output, value, len)
+static void MemorySet(output, value, len)
     POINTER output;
 int value;
 unsigned int len;
 {
-    unsigned int i;
-
-    for (i = 0; i < len; i++)
-        ((char *)output)[i] = (char)value;
+    memcpy((char *)output, &value, len);
 }
 
-/* Display expected value
-   Currently displaying the empty string
+/* Display Test Values
+   R[1]: 9.4.2 Table 9.6
 */
-void display_expected()
+static void DisplayTestValues()
 {
-    printf("d41d8cd98f00b204e9800998ecf8427e"); // ""
+    printf("MD5 Test Values\n");
+    printf("\"\"                           ->   d41d8cd98f00b204e9800998ecf8427e\n");
+    printf("a                            ->   0cc175b9c0f1b6a831c399e269772661\n");
+    printf("abc                          ->   900150983cd24fb0d6963f7d28e17f72\n");
+    printf("abcdefghijklmnopqrstuvwxyz   ->   900150983cd24fb0d6963f7d28e17f72\n");
     printf("\n");
 }
 
 /* Calculate From File
    R[4]: A.4 mddriver.c Page19
 */
-static void MD5File(filename) char *filename;
+static void GenerateFromFile(filename) char *filename;
 {
     FILE *file;
-    MD5_CTX context;
+    CONTEXT context;
     int len;
     unsigned char buffer[1024], digest[16];
 
+    // Check for null file
     if ((file = fopen(filename, "rb")) == NULL)
         printf("%s can't be opened\n", filename);
-
     else
     {
-        MD5Init(&context);
+        /* Initialise New Context */
+        InitialiseMD5(&context);
+        /* While not eof, call update function */
         while (len = fread(buffer, 1, 1024, file))
-            MD5Update(&context, buffer, len);
-        MD5Final(digest, &context);
+            NextBlock(&context, buffer, len);
+        /* Generate MD5 Message Digest */
+        GenerateMD5(digest, &context);
 
         fclose(file);
 
         printf("(%s) = ", filename);
-        MD5Print(digest);
+        PrintMessageDigest(digest);
         printf("\n");
     }
+}
+
+/* Calculate From Console 
+   R[4]: A.4 mddriver.c Page17
+*/
+static void GenerateFromString(input) char *input;
+{
+    CONTEXT context;
+    unsigned char messagedigest[16];
+    unsigned int length = strlen(input);
+
+    InitialiseMD5(&context);
+    NextBlock(&context, input, length);
+    GenerateMD5(messagedigest, &context);
+
+    printf("(%s) = ", input);
+    PrintMessageDigest(messagedigest);
+    printf("\n");
 }
 
 /* Print Generated MD5 digest
    R[4]: A.4 mddriver.c (Page19, Page20)
 */
-static void MD5Print(digest) unsigned char digest[16];
+static void PrintMessageDigest(digest) unsigned char digest[16];
 {
-    unsigned int i;
-
-    for (i = 0; i < 16; i++)
+    for (unsigned int i = 0; i < 16; i++)
         printf("%02x", digest[i]);
+}
+
+static void DisplayOptions()
+{
+    printf("MD5 Hash Generator\n");
+    printf("Options List\n 1:   Generate From File\n 2:   Generate From String\n 3:   Display Test Values\n-1:   Quit\n");
+}
+
+static void DisplayMenu()
+{
+    int choice;
+
+    DisplayOptions();
+    /* Initial Read for while */
+    printf("Please enter an option: ");
+    scanf("%d", &choice);
+    printf("\n");
+    while (choice != -1)
+    {
+        char *input;
+        char *mode = "r";
+
+        /* Read from file */
+        if (choice == 1)
+        {
+            // Select file
+            printf("Please enter a file: ");
+            scanf("%s", input);
+            GenerateFromFile(input);
+            printf("\n");
+        }
+
+        /* Read from console */
+        if (choice == 2)
+        {
+            // Select file
+            printf("Please enter text to hash: ");
+            scanf("%s", input);
+            GenerateFromString(input);
+            printf("\n");
+        }
+
+        /* Display test values */
+        if (choice == 3)
+        {
+            DisplayTestValues();
+            printf("\n");
+        }
+
+        DisplayOptions();
+        /* Subsequent Read for while */
+        printf("Please enter an option: ");
+        scanf("%d", &choice);
+        printf("\n");
+    }
 }
 
 /* Main */
 int main(int argc, char *argv[])
 {
-    /* Disply expected value */
-    display_expected();
-
-    /* Generate from file */
-    MD5File(argv[1]);
+    DisplayMenu();
+    // GenerateFromFile(argv[1]);
     return 0;
 }

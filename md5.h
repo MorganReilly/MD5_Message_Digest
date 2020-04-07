@@ -15,12 +15,12 @@ typedef struct
     UINT4 word_state[4];           /* state (ABCD) */
     UINT4 bit_count[2];           /* number of bits, modulo 2^64 (lsb first) */
     unsigned char input_buffer[64]; /* input buffer */
-} MD5_CTX;
+} CONTEXT;
 
 /* Function Declaration
    These define the function type and parameters of the functions used in md5.c
-   R[4]: A.3 md5.c Page9
+   Adapted from: R[4]: A.3 md5.c Page9
 */
-void MD5Init ARG_LIST((MD5_CTX *));
-void MD5Update ARG_LIST((MD5_CTX *, unsigned char *, unsigned int));
-void MD5Final ARG_LIST((unsigned char[16], MD5_CTX *)); 
+void InitialiseMD5 ARG_LIST((CONTEXT *));
+void NextBlock ARG_LIST((CONTEXT *, unsigned char *, unsigned int));
+void GenerateMD5 ARG_LIST((unsigned char[16], CONTEXT *)); 
