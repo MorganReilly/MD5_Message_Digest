@@ -141,8 +141,7 @@ const uint32_t T[] = {0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
    with a new context to write to.
    Adapted from: R[4]: A.3 md5.c Page10
 */
-void InitialiseMD5(context)
-    CONTEXT *context; /* context */
+void InitialiseMD5(context) CONTEXT *context; /* context */
 {
     context->bit_count[0] = context->bit_count[1] = 0;
     /* Load magic initialization constants.*/
@@ -157,10 +156,9 @@ void InitialiseMD5(context)
    processing block after block while updating the context
    Adapted from: R[4]: A.3 md5.c (Page10, Page11)
 */
-void NextBlock(context, input, inputLength)
-    CONTEXT *context;     /* context */
-unsigned char *input;     /* input block */
-unsigned int inputLength; /* length of input block */
+void NextBlock(context, input, inputLength) CONTEXT *context; /* context */
+unsigned char *input;                                         /* input block */
+unsigned int inputLength;                                     /* length of input block */
 {
     unsigned int i, index, partLen;
 
@@ -226,8 +224,7 @@ CONTEXT *context;                                           /* context */
    Taking a state, and calculating next block 
    R[4]: A.3 md5.c (Page12, Page13)
 */
-static void NextHash(state, block)
-    UINT4 state[4];
+static void NextHash(state, block) UINT4 state[4];
 unsigned char block[64];
 {
     UINT4 a = state[0], b = state[1], c = state[2], d = state[3], x[16];
@@ -342,8 +339,7 @@ unsigned int len;
    This needs to be set to little endian, output is incorrect
    R[4]: A.3 md5.c Page14
 */
-static void Decode(output, input, length)
-    UINT4 *output;
+static void Decode(output, input, length) UINT4 *output;
 unsigned char *input;
 unsigned int length;
 {
@@ -357,8 +353,7 @@ unsigned int length;
 /* Memory Copy
    R[4]: A.3 md5.c Page14
 */
-static void MemoryCopy(output, input, length)
-    POINTER output;
+static void MemoryCopy(output, input, length) POINTER output;
 POINTER input;
 unsigned int length;
 {
@@ -368,8 +363,7 @@ unsigned int length;
 /* Memory Set
    R[4]: A.3 md5.c Page15
 */
-static void MemorySet(output, value, len)
-    POINTER output;
+static void MemorySet(output, value, len) POINTER output;
 int value;
 unsigned int len;
 {
@@ -447,12 +441,14 @@ static void PrintMessageDigest(digest) unsigned char digest[16];
         printf("%02x", digest[i]);
 }
 
+/* Display Menu Options */
 static void DisplayOptions()
 {
     printf("MD5 Hash Generator\n");
     printf("Options List\n 1:   Generate From File\n 2:   Generate From String\n 3:   Display Test Values\n-1:   Quit\n");
 }
 
+/* Display Menu */
 static void DisplayMenu()
 {
     int choice;
@@ -470,7 +466,7 @@ static void DisplayMenu()
         /* Read from file */
         if (choice == 1)
         {
-            // Select file
+            /* Select file */
             printf("Please enter a file: ");
             scanf("%s", input);
             GenerateFromFile(input);
@@ -480,7 +476,7 @@ static void DisplayMenu()
         /* Read from console */
         if (choice == 2)
         {
-            // Select file
+            /* Console Input */
             printf("Please enter text to hash: ");
             scanf("%s", input);
             GenerateFromString(input);
@@ -506,6 +502,5 @@ static void DisplayMenu()
 int main(int argc, char *argv[])
 {
     DisplayMenu();
-    // GenerateFromFile(argv[1]);
     return 0;
 }
