@@ -141,10 +141,10 @@ void MD5Init(context)
 {
     context->bit_count[0] = context->bit_count[1] = 0;
     /* Load magic initialization constants.*/
-    context->word_state[0] = 0x67452301;
-    context->word_state[1] = 0xefcdab89;
-    context->word_state[2] = 0x98badcfe;
-    context->word_state[3] = 0x10325476;
+    context->word_state[0] = 0x67452301; /* A */
+    context->word_state[1] = 0xefcdab89; /* B */
+    context->word_state[2] = 0x98badcfe; /* C */
+    context->word_state[3] = 0x10325476; /* D */
 }
 
 /* MD5 block update operation 
@@ -163,6 +163,7 @@ unsigned int inputLength; /* length of input block */
     index = (unsigned int)((context->bit_count[0] >> 3) & 0x3F);
 
     /* Update number of bits */
+
     if ((context->bit_count[0] += ((UINT4)inputLength << 3)) < ((UINT4)inputLength << 3))
         context->bit_count[1]++;
     context->bit_count[1] += ((UINT4)inputLength >> 29);
@@ -172,8 +173,8 @@ unsigned int inputLength; /* length of input block */
     // Transform as many times as possible
     if (inputLength >= partLen)
     {
-        MD5_memcpy((POINTER)&context->buffer[index], (POINTER)input, partLen);
-        MD5Transform(context->word_state, context->buffer);
+        MD5_memcpy((POINTER)&context->input_buffer[index], (POINTER)input, partLen);
+        MD5Transform(context->word_state, context->input_buffer);
 
         for (i = partLen; i + 63 < inputLength; i += 64)
             MD5Transform(context->word_state, &input[i]);
@@ -184,7 +185,7 @@ unsigned int inputLength; /* length of input block */
         i = 0;
 
     /* Buffer remaining input */
-    MD5_memcpy((POINTER)&context->buffer[index], (POINTER)&input[i],
+    MD5_memcpy((POINTER)&context->input_buffer[index], (POINTER)&input[i],
                inputLength - i);
 }
 
@@ -226,6 +227,7 @@ unsigned char block[64];
 {
     UINT4 a = state[0], b = state[1], c = state[2], d = state[3], x[16];
 
+    /* TODO: This needs to be change to little endian here, currently in big endian */
     Decode(x, block, 64);
 
     /* Round Declaration 

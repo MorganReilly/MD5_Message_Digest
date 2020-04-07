@@ -14,7 +14,7 @@ typedef struct
 {
     UINT4 word_state[4];           /* state (ABCD) */
     UINT4 bit_count[2];           /* number of bits, modulo 2^64 (lsb first) */
-    unsigned char buffer[64]; /* input buffer */
+    unsigned char input_buffer[64]; /* input buffer */
 } MD5_CTX;
 
 /* Function Declaration
@@ -24,10 +24,3 @@ typedef struct
 void MD5Init ARG_LIST((MD5_CTX *));
 void MD5Update ARG_LIST((MD5_CTX *, unsigned char *, unsigned int));
 void MD5Final ARG_LIST((unsigned char[16], MD5_CTX *)); 
-void MD5Transform ARG_LIST((UINT4[4], unsigned char[64]));
-void Encode ARG_LIST((unsigned char *, UINT4 *, unsigned int));
-void Decode ARG_LIST((UINT4 *, unsigned char *, unsigned int));
-void MD5_memcpy ARG_LIST((POINTER, POINTER, unsigned int));
-void MD5_memset ARG_LIST((POINTER, int, unsigned int));
-void MD5File ARG_LIST((char *));
-void MD5Print ARG_LIST((unsigned char[16]));
