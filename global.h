@@ -5,10 +5,10 @@
 Adapted from: https://www.ietf.org/rfc/rfc1321.txt
 
 Section A.1 global.h
-Set PROTOTYPES to be one, only if the compiler supports function argument prototyping
+Set ARGTYPES to be one, only if the compiler supports function argument
 */
-#ifndef PROTOTYPES
-#define PROTOTYPES 0
+#ifndef ARGTYPES   /*Define directive if conditions met */
+#define ARGTYPES 0 /*Set directive value */
 #endif
 
 /* POINTER defines a generic pointer type */
@@ -20,12 +20,12 @@ typedef unsigned short int UINT2;
 /* UINT4 defines a four byte word */
 typedef unsigned long int UINT4;
 
-/* PROTO_LIST is defined depending on how PROTOTYPES is defined above.
-If using PROTOTYPES, then PROTO_LIST returns the list, otherwise it
+/* ARG_LIST is defined depending on how PROTOTYPES is defined above.
+If using PROTOTYPES, then ARG_LIST returns the list, otherwise it
   returns an empty list.
  */
-#if PROTOTYPES
-#define PROTO_LIST(list) list
+#if ARGTYPES
+#define ARG_LIST(list) list
 #else
-#define PROTO_LIST(list) ()
-#endif 
+#define ARG_LIST(list) ()
+#endif
