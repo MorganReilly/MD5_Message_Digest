@@ -18,7 +18,9 @@ Currently there have been no collisions found on MD5
 * To Compile program, run: 
 * `$ make md5`
 * To Run program, run:
-* `$ ./md5 <file_name>`
+* `$ ./md5`
+* Select an option from in menu display
+* `$ <option>`
 
 ### Conclusions
 I was unable to generate a correct message digest, despite following the instructions from reference [4](https://www.ietf.org/rfc/rfc1321.txt), this was due, I think, to the endianness of the program. However this project was an interesting and challenging undertaking which expanded on my existing knowledge of C, and also introduced me to cryptographic functions.
