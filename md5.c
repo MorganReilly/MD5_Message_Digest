@@ -26,6 +26,9 @@ Differences between signed and unsigned:
 #include <inttypes.h>
 #include <endian.h>
 #include <string.h>
+#include <unistd.h>
+#include <ctype.h>
+#include <stdlib.h>
 
 /* Constants definition for Transformation routine
    R[4]: A.3 md5.c Page9
@@ -498,9 +501,79 @@ static void DisplayMenu()
     }
 }
 
+/* 
+   Display Command Line Args
+
+   R[i]: https://www.geeksforgeeks.org/getopt-function-in-c-to-parse-command-line-arguments/
+ */
+// static void DisplayArgs(int opt)
+// {
+//     /*
+//     put ':' in the starting of the
+//     string so that program can
+//     distinguish between '?' and ':'
+//     */
+//    while((opt = getopt(argc, argv, “:if:lrx”)) != -1)
+//     {
+//         switch(opt)
+//         {
+//             case ‘i’:
+//             case ‘l’:
+//             case ‘r’:
+//                 printf(“option: %c\n”, opt);
+//                 break;
+//             case ‘f’:
+//                 printf(“filename: %s\n”, optarg);
+//                 break;
+//             case ‘:’:
+//                 printf(“option needs a value\n”);
+//                 break;
+//             case ‘?’:
+//                 printf(“unknown option: %c\n”, optopt);
+//                 break;
+//         }
+//     }
+
+//     /*
+//     optind is for the extra arguments
+//     which are not parsed */
+//     for(; optind < argc; optind++){
+//         printf(“extra arguments: %s\n”, argv[optind]);
+//     }
+// }
+
 /* Main */
-int main(int argc, char *argv[])
+int main(int argc, char *const argv[])
 {
-    DisplayMenu();
+    // DisplayMenu();
+
+    // https://www.tutorialspoint.com/getopt-function-in-c-to-parse-command-line-arguments
+    int option;
+    // put ':' at the starting of the string so compiler can distinguish between '?' and ':'
+    while ((option = getopt(argc, argv, ":if:lrx")) != -1)
+    { //get option from the getopt() method
+        switch (option)
+        {
+        //For option i, r, l, print that these are options
+        case 'i':
+        case 'l':
+        case 'r':
+            printf("Given Option: %c\n", option);
+            break;
+        case 'f': //here f is used for some file name
+            printf("Given File: %s\n", optarg);
+            break;
+        case ':':
+            printf("option needs a value\n");
+            break;
+        case '?': //used for some unknown options
+            printf("unknown option: %c\n", optopt);
+            break;
+        }
+    }
+    for (; optind < argc; optind++)
+    { //when some extra arguments are passed
+        printf("Given extra arguments: %s\n", argv[optind]);
+    }
     return 0;
 }
