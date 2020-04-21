@@ -68,9 +68,17 @@ The code itself allows the user to choose via command line if they would like to
 __You should explain how to download, compile, and run your code.
 Include instructions of how to install the compiler.__
 
+#### Download Application
+* Ensure you have git installed on machine
+* To Download application, run:
+* `$ git clone https://github.com/MorganReilly/MD5_Message_Digest.git `
+
+#### Compile Application
 * Ensure you have gcc installed on machine
 * To Compile program, run: 
 * `$ make md5`
+
+#### Run Application
 * To Run program, run:
 * `$ ./md5`
 * Select an option from in menu display
@@ -78,6 +86,7 @@ Include instructions of how to install the compiler.__
 
 ## Test
 __Explain how to run the tests included in your code.__
+* To test application, run option: `x`
 
 ## Algorithm
 __Give an overview and explanation of the main algorithm(s)
