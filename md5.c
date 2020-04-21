@@ -543,37 +543,39 @@ static void DisplayMenu()
 // }
 
 /* Main */
-int main(int argc, char *const argv[])
+int main (argc, argv)
+int argc;
+char *argv[];
 {
-    // DisplayMenu();
+    DisplayMenu();
 
-    // https://www.tutorialspoint.com/getopt-function-in-c-to-parse-command-line-arguments
-    int option;
-    // put ':' at the starting of the string so compiler can distinguish between '?' and ':'
-    while ((option = getopt(argc, argv, ":if:lrx")) != -1)
-    { //get option from the getopt() method
-        switch (option)
-        {
-        //For option i, r, l, print that these are options
-        case 'i':
-        case 'l':
-        case 'r':
-            printf("Given Option: %c\n", option);
-            break;
-        case 'f': //here f is used for some file name
-            printf("Given File: %s\n", optarg);
-            break;
-        case ':':
-            printf("option needs a value\n");
-            break;
-        case '?': //used for some unknown options
-            printf("unknown option: %c\n", optopt);
-            break;
-        }
-    }
-    for (; optind < argc; optind++)
-    { //when some extra arguments are passed
-        printf("Given extra arguments: %s\n", argv[optind]);
-    }
-    return 0;
+    int i;
+
+    // if (argc > 1)
+    //     for (i = 1; i < argc; i++)
+    //         if (argv[i][0] == '-' && argv[i][1] == 's'){
+    //             //MDString(argv[i] + 2);
+    //             printf("String Input");
+    //         }
+                
+    //         else if (strcmp(argv[i], "-t") == 0){
+    //             //MDTimeTrial();
+    //             printf("Time Trial");
+    //         }
+    //         else if (strcmp(argv[i], "-x") == 0){
+    //             //MDTestSuite();
+    //             printf("Test Input");
+    //         }
+    //         else if (strcmp(argv[i], "-h") == 0){
+    //             //MDTestSuite();
+    //             printf("Help");
+    //         }
+    //         else{
+    //             //MDFile(argv[i]);
+    //             printf("String Input");
+    //         }
+    // else
+    //     MDFilter();
+
+    return (0);
 }
