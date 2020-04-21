@@ -16,7 +16,7 @@ Message Authentication Codes, which are a distinct class of hash functions, allo
 Hash functions can be split into two classes: _unkeyed hash values_ and _keyed hash values_. An _unkeyed hash value_ dictates a single parameter input, usually called a message. Whereas a _keyed hash value_ dictates two input parameters, a message and a key. [[1]](http://cacr.uwaterloo.ca/hac/)
 
 #### Definitions
-The Definition of a hash function, according to the [handbook of applied cryptography Chapter]((http://cacr.uwaterloo.ca/hac/))[9.1], is a function which has, as a minimum, the following two properties:
+The Definition of a hash function, according to the [handbook of applied cryptography Chapter](http://cacr.uwaterloo.ca/hac/)[9.1], is a function which has, as a minimum, the following two properties:
 1. compression:
    _h_ maps an input _x_ of arbitrary finite bit length, to an output _h(x)_ of fixed bit length _n_.
 2. ease of computation:
@@ -91,6 +91,48 @@ __Explain how to run the tests included in your code.__
 ## Algorithm
 __Give an overview and explanation of the main algorithm(s)
 in your code. You might use a well-thought out diagram here.__
+Since the MD5 algorithm is based on the MD4 algorithm, I have decided to include both algorithms, describing the changes from MD4 to MD5. The following algorithms are adapted from chapter 9 of the [applied handbook of cryptography](http://cacr.uwaterloo.ca/hac/).
+
+### MD4
+The following instructions are based from chapter 9 of the handbook of applied cryptography:
+* INPUT: bitstring _x_ of arbirtary bitlength _b_ $\ge$ 0
+* OUTPUT: 128-bit hash-code of _x_
+1. _Define Constants_ : Define four 32-bit initial chaining values: _h1_ = 0x67452301, _h2_ = 0xefcdab89, _h3_ = 0x98badcfe, _h4_ = 0x10325476
+i. Define 32-bit constants:
+y[j] = 0, 0 <= j <= 15;
+y[j] = 0x5a827999, 16 <= j <= 31;
+y[j] = 0x6ed9eba1, 32 <= j <= 47;
+ii. Define order of accessing source words
+z[0..15] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+z[16..31] = [0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15],
+z[32..47] = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15]
+iii. Define number of bit positions for left shifts
+s[0..15] = [3, 7, 11, 19, 3, 7, 11, 19, 3, 7, 11, 19, 3, 7, 11, 19],
+s[16..31] = [3, 5, 9, 13, 3, 5, 9, 13, 3, 5, 9, 13, 3, 5, 9, 13],
+s[32..47] = [3, 9, 11, 15, 3, 9, 11, 15, 3, 9, 11, 15, 3, 9, 11, 15]
+2. _Preprocessing_ : Pad out _x_ so that the number of bits it contains is a multiple of 512. This is done by:
+i. Appending a single 1-bit
+ii. Appending _r_ -1 (>= 0) 0-bits for the smallest _r_ which will result in a bitlength 64 less than a multiple of 512.
+iii. Finally, append the 64-bit representation of _b_ mod 2^64, as two 32-bit words in little-endien. Let _m_ be the number of 512-bit blocks in the string result. This formatted input will consist of 16_m_ 32-bit words. Initialise: (_H1_, _H2_, _H3_, _H4_) <- (_h1_, _h2_, _h3_, _h4_)
+3. _Processing_ : For each _i_ from 0 to _m_ -1, copy the _i_th block of 16 32-bit words into a temporary store, then process them in three 16-step rounds before updating the chaining variables:
+i. Initialise working variables: (_A_, _B_, _C_, _D_) <- (_H1_, _H2_, _H3_, _H4_)
+ii. Round 1: For _j_ 0 to 15 do: 
+_t_ <- (A + f(B,C,D) + X[z[j]] + y[j]),  (_A_, _B_, _C_, _D_) <- (D, t <- s[j], B, C) 
+iii. Round 2: For _j_ 16 to 31 do:
+_t_ <- (A + g(B,C,D) + X[z[j]] + y[j]),  (_A_, _B_, _C_, _D_) <- (D, t <- s[j], B, C) 
+iv. Round 3: For _j_ 32 to 47 do:
+_t_ <- (A + h(B,C,D) + X[z[j]] + y[j]),  (_A_, _B_, _C_, _D_) <- (D, t <- s[j], B, C) 
+v. Update chaining values: (_H1_, _H2_, _H3_, _H4_) <- (_H1_ + _A_, _H2_ + _B_, _H3_ + _C_, + _H4_ + _D_)
+4. Completion: The hashing is now complete and is the concatenation: _H1_||_H2_||_H3_||_H4_
+
+Differences between md4 and md5:
+The MD5 was designed to be a strengthened version of the Message Digest 4 algorithm, but this was before any collisions were found in MD4. As per the Handbook of Applied Cryptography, the following changes from MD4 to MD5 were made:
+1. An addition of a fourth round of 16 steps, along with a new Round 4 function
+2. The replacement of the Round 2 function with a new function
+3. The modification of the access order for the message words in Round 2 and Round 3
+4. The modification of the shift amounts
+5 . The use of unique additive constants in each of the 4 x 16 steps, which are based on the integer part of 2^32 x sin(j) for step j
+6 . The addition of output form the previous step into each of the 64 steps
 
 ## Complexity
 __This should be the most significant part of the report.
