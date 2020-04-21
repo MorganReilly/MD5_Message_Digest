@@ -98,18 +98,18 @@ The following instructions are based from chapter 9 of the handbook of applied c
 * INPUT: bitstring _x_ of arbirtary bitlength _b_ $\ge$ 0
 * OUTPUT: 128-bit hash-code of _x_
 1. _Define Constants_ : Define four 32-bit initial chaining values: _h1_ = 0x67452301, _h2_ = 0xefcdab89, _h3_ = 0x98badcfe, _h4_ = 0x10325476
-   i. Define 32-bit constants:
-   y[j] = 0, 0 <= j <= 15;
-   y[j] = 0x5a827999, 16 <= j <= 31;
-   y[j] = 0x6ed9eba1, 32 <= j <= 47;
-   ii. Define order of accessing source words
-   z[0..15] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-   z[16..31] = [0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15],
-   z[32..47] = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15]
-   iii. Define number of bit positions for left shifts
-   s[0..15] = [3, 7, 11, 19, 3, 7, 11, 19, 3, 7, 11, 19, 3, 7, 11, 19],
-   s[16..31] = [3, 5, 9, 13, 3, 5, 9, 13, 3, 5, 9, 13, 3, 5, 9, 13],
-   s[32..47] = [3, 9, 11, 15, 3, 9, 11, 15, 3, 9, 11, 15, 3, 9, 11, 15]
+   1. Define 32-bit constants:
+      * y[j] = 0, 0 <= j <= 15;
+      * y[j] = 0x5a827999, 16 <= j <= 31;
+      * y[j] = 0x6ed9eba1, 32 <= j <= 47;
+   2. Define order of accessing source words
+      * z[0..15] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      * z[16..31] = [0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15],
+      * z[32..47] = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15]
+   3. Define number of bit positions for left shifts
+      * s[0..15] = [3, 7, 11, 19, 3, 7, 11, 19, 3, 7, 11, 19, 3, 7, 11, 19],
+      * s[16..31] = [3, 5, 9, 13, 3, 5, 9, 13, 3, 5, 9, 13, 3, 5, 9, 13],
+      * s[32..47] = [3, 9, 11, 15, 3, 9, 11, 15, 3, 9, 11, 15, 3, 9, 11, 15]
 2. _Preprocessing_ : Pad out _x_ so that the number of bits it contains is a multiple of 512. This is done by:
    1. Appending a single 1-bit
    2. Appending _r_ -1 (>= 0) 0-bits for the smallest _r_ which will result in a bitlength 64 less than a multiple of 512.
