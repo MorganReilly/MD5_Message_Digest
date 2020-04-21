@@ -68,6 +68,14 @@ The code itself allows the user to choose via command line if they would like to
 __You should explain how to download, compile, and run your code.
 Include instructions of how to install the compiler.__
 
+* Ensure you have gcc installed on machine
+* To Compile program, run: 
+* `$ make md5`
+* To Run program, run:
+* `$ ./md5`
+* Select an option from in menu display
+* `$ <option>`
+
 ## Test
 __Explain how to run the tests included in your code.__
 
