@@ -111,18 +111,18 @@ The following instructions are based from chapter 9 of the handbook of applied c
    s[16..31] = [3, 5, 9, 13, 3, 5, 9, 13, 3, 5, 9, 13, 3, 5, 9, 13],
    s[32..47] = [3, 9, 11, 15, 3, 9, 11, 15, 3, 9, 11, 15, 3, 9, 11, 15]
 2. _Preprocessing_ : Pad out _x_ so that the number of bits it contains is a multiple of 512. This is done by:
-   i. Appending a single 1-bit
-   ii. Appending _r_ -1 (>= 0) 0-bits for the smallest _r_ which will result in a bitlength 64 less than a multiple of 512.
-   iii. Finally, append the 64-bit representation of _b_ mod 2^64, as two 32-bit words in little-endien. Let _m_ be the        number of 512-bit blocks in the string result. This formatted input will consist of 16_m_ 32-bit words. Initialise:          (_H1_, _H2_, _H3_, _H4_) <- (_h1_, _h2_, _h3_, _h4_)
+   1. Appending a single 1-bit
+   2. Appending _r_ -1 (>= 0) 0-bits for the smallest _r_ which will result in a bitlength 64 less than a multiple of 512.
+   3. Finally, append the 64-bit representation of _b_ mod 2^64, as two 32-bit words in little-endien. Let _m_ be the number of 512-bit blocks in the string result. This formatted input will consist of 16_m_ 32-bit words. Initialise: (_H1_, _H2_, _H3_, _H4_) <- (_h1_, _h2_, _h3_, _h4_)
 3. _Processing_ : For each _i_ from 0 to _m_ -1, copy the _i_th block of 16 32-bit words into a temporary store, then process them in three 16-step rounds before updating the chaining variables:
-   i. Initialise working variables: (_A_, _B_, _C_, _D_) <- (_H1_, _H2_, _H3_, _H4_)
-   ii. Round 1: For _j_ 0 to 15 do: 
+   1. Initialise working variables: (_A_, _B_, _C_, _D_) <- (_H1_, _H2_, _H3_, _H4_)
+   2. Round 1: For _j_ 0 to 15 do: 
    _t_ <- (A + f(B,C,D) + X[z[j]] + y[j]),  (_A_, _B_, _C_, _D_) <- (D, t <- s[j], B, C) 
-   iii. Round 2: For _j_ 16 to 31 do:
+   3. Round 2: For _j_ 16 to 31 do:
    _t_ <- (A + g(B,C,D) + X[z[j]] + y[j]),  (_A_, _B_, _C_, _D_) <- (D, t <- s[j], B, C) 
-   iv. Round 3: For _j_ 32 to 47 do:
+   4. Round 3: For _j_ 32 to 47 do:
    _t_ <- (A + h(B,C,D) + X[z[j]] + y[j]),  (_A_, _B_, _C_, _D_) <- (D, t <- s[j], B, C) 
-   v. Update chaining values: (_H1_, _H2_, _H3_, _H4_) <- (_H1_ + _A_, _H2_ + _B_, _H3_ + _C_, + _H4_ + _D_)
+   5. Update chaining values: (_H1_, _H2_, _H3_, _H4_) <- (_H1_ + _A_, _H2_ + _B_, _H3_ + _C_, + _H4_ + _D_)
 4. Completion: The hashing is now complete and is the concatenation: _H1_||_H2_||_H3_||_H4_
 
 Differences between md4 and md5:
