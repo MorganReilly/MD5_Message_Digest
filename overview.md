@@ -47,8 +47,22 @@ MD5 was designed as a strengthened version of MD4, prior to actual MD4 collision
 ![md5 compression](./images/md5_compression.png)
 
 #### About this Repository
+This repository contains the following:
+* [.gitignore](./.gitignore) : This file allows git to ignore any files that are not meant to be in version control
+* [LICENCE](./LICENCE)
+* [README.md](./README.md) : This is a brief overview of the project, and instructions to run.
+* [global.h](./global.h) : This is a header file which pre-defines global data types for use in the main file, which could be used more abstractly.
+* [md5.c](./md5.c) : This is the main runner file which contains the MD5 C compiled code
+* [md5.h](./md5.h) : This is a header file which pre-defines data types for specific use with the main runner file (md5.c).
+* [overview.md](./overview.md) : This report on the project. 
 
 #### About the Code
+The code is written in C, and is separated out into 3 components:
+1. [md5.c](./md5.c)
+2. [md5.h](./md5.h)
+3. [global.h](./global.h)
+An overview of the purpose of these components are outlined in the section above this.
+The code itself allows the user to choose via command line if they would like to input a string or a file to generate an MD5 hash. This is done by breaking the input message into blocks, padding where necessary, then applying the hashing function and returning the message.
 
 ## Run
 __You should explain how to download, compile, and run your code.
