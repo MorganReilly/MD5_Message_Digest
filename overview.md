@@ -94,38 +94,38 @@ in your code. You might use a well-thought out diagram here.__
 Since the MD5 algorithm is based on the MD4 algorithm, I have decided to include both algorithms, describing the changes from MD4 to MD5. The following algorithms are adapted from chapter 9 of the [applied handbook of cryptography](http://cacr.uwaterloo.ca/hac/).
 
 ### MD4
-The following instructions are based from chapter 9 of the handbook of applied cryptography:
-* INPUT: bitstring _x_ of arbirtary bitlength _b_ $\ge$ 0
+The following instructions are based from chapter 9 of the [applied handbook of cryptography](http://cacr.uwaterloo.ca/hac/):
+* INPUT: bitstring _x_ of arbirtary bitlength _b >= 0_
 * OUTPUT: 128-bit hash-code of _x_
-1. _Define Constants_ : Define four 32-bit initial chaining values: _h1_ = 0x67452301, _h2_ = 0xefcdab89, _h3_ = 0x98badcfe, _h4_ = 0x10325476
+1. _Define Constants_ : Define four 32-bit initial chaining values: `h1 = 0x67452301, h2 = 0xefcdab89, h3 = 0x98badcfe, h4 = 0x10325476`
    1. Define 32-bit constants:
       * y[j] = 0, 0 <= j <= 15;
       * y[j] = 0x5a827999, 16 <= j <= 31;
       * y[j] = 0x6ed9eba1, 32 <= j <= 47;
    2. Define order of accessing source words
-      * z[0..15] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-      * z[16..31] = [0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15],
+      * z[0..15] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      * z[16..31] = [0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15]
       * z[32..47] = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15]
    3. Define number of bit positions for left shifts
-      * s[0..15] = [3, 7, 11, 19, 3, 7, 11, 19, 3, 7, 11, 19, 3, 7, 11, 19],
-      * s[16..31] = [3, 5, 9, 13, 3, 5, 9, 13, 3, 5, 9, 13, 3, 5, 9, 13],
+      * s[0..15] = [3, 7, 11, 19, 3, 7, 11, 19, 3, 7, 11, 19, 3, 7, 11, 19]
+      * s[16..31] = [3, 5, 9, 13, 3, 5, 9, 13, 3, 5, 9, 13, 3, 5, 9, 13]
       * s[32..47] = [3, 9, 11, 15, 3, 9, 11, 15, 3, 9, 11, 15, 3, 9, 11, 15]
 2. _Preprocessing_ : Pad out _x_ so that the number of bits it contains is a multiple of 512. This is done by:
    1. Appending a single 1-bit
-   2. Appending _r_ -1 (>= 0) 0-bits for the smallest _r_ which will result in a bitlength 64 less than a multiple of 512.
-   3. Finally, append the 64-bit representation of _b_ mod 2^64, as two 32-bit words in little-endien. Let _m_ be the number of 512-bit blocks in the string result. This formatted input will consist of 16_m_ 32-bit words. Initialise: (_H1_, _H2_, _H3_, _H4_) <- (_h1_, _h2_, _h3_, _h4_)
-3. _Processing_ : For each _i_ from 0 to _m_ -1, copy the _i_th block of 16 32-bit words into a temporary store, then process them in three 16-step rounds before updating the chaining variables:
-   1. Initialise working variables: (_A_, _B_, _C_, _D_) <- (_H1_, _H2_, _H3_, _H4_)
+   2. Appending _r -1 (>= 0)_ 0-bits for the smallest _r_ which will result in a bitlength 64 less than a multiple of 512.
+   3. Finally, append the 64-bit representation of _b mod 2^64_, as two 32-bit words in little-endien. Let _m_ be the number of 512-bit blocks in the string result. This formatted input will consist of 16_m_ 32-bit words. Initialise: `(H1, H2, H3, H4) <- (h1, h2, h3, h4)`
+3. _Processing_ : For each _i_ from 0 to _m-1_ copy the _ith_ block of 16 32-bit words into a temporary store, then process them in three 16-step rounds before updating the chaining variables:
+   1. Initialise working variables: `(A, B, C, D) <- (H1, H2, H3, H4)`
    2. Round 1: For _j_ 0 to 15 do: 
-   _t_ <- (A + f(B,C,D) + X[z[j]] + y[j]),  (_A_, _B_, _C_, _D_) <- (D, t <- s[j], B, C) 
+   `t <- (A + f(B,C,D) + X[z[j]] + y[j]),  (A, B, C, D) <- (D, t <- s[j], B, C)` 
    3. Round 2: For _j_ 16 to 31 do:
-   _t_ <- (A + g(B,C,D) + X[z[j]] + y[j]),  (_A_, _B_, _C_, _D_) <- (D, t <- s[j], B, C) 
+   `t <- (A + g(B,C,D) + X[z[j]] + y[j]),  (A, B, C, D) <- (D, t <- s[j], B, C)` 
    4. Round 3: For _j_ 32 to 47 do:
-   _t_ <- (A + h(B,C,D) + X[z[j]] + y[j]),  (_A_, _B_, _C_, _D_) <- (D, t <- s[j], B, C) 
-   5. Update chaining values: (_H1_, _H2_, _H3_, _H4_) <- (_H1_ + _A_, _H2_ + _B_, _H3_ + _C_, + _H4_ + _D_)
-4. Completion: The hashing is now complete and is the concatenation: _H1_||_H2_||_H3_||_H4_
+   `t <- (A + h(B,C,D) + X[z[j]] + y[j]),  (A, B, C, D) <- (D, t <- s[j], B, C)` 
+   5. Update chaining values: `(H1, H2, H3, H4) <- (H1 + A, H2 + B, H3 + C, + H4 + D)`
+4. Completion: The hashing is now complete and is the concatenation: `H1 || H2 || H3 || H4`
 
-Differences between md4 and md5:
+#### Differences between md4 and md5:
 The MD5 was designed to be a strengthened version of the Message Digest 4 algorithm, but this was before any collisions were found in MD4. As per the Handbook of Applied Cryptography, the following changes from MD4 to MD5 were made:
 1. An addition of a fourth round of 16 steps, along with a new Round 4 function
 2. The replacement of the Round 2 function with a new function
@@ -133,6 +133,31 @@ The MD5 was designed to be a strengthened version of the Message Digest 4 algori
 4. The modification of the shift amounts
 5 . The use of unique additive constants in each of the 4 x 16 steps, which are based on the integer part of 2^32 x sin(j) for step j
 6 . The addition of output form the previous step into each of the 64 steps
+
+### MD5
+* INPUT: bitstring _x_ of arbirtary bitlength _b >= 0_
+* OUTPUT: 128-bit hash-code of _x_
+_The following changes made to MD4 will result in MD5_
+1. _Notation_ : Replace Round 2 function by: `g(u, v, w) = uw V !uw`
+   1. Define a Round 4 function: `k(u, v, w) = v XOR (u V !w)`
+2. _Constants Definition_
+   1. Redefine unique additive constants:
+      * _y[j]_ = first 32-bits binary value _abs( sin( j + 1 ))_, 0 <= _j_ <= 63
+   2. Redefine access order for Round 2 and Round 3, also define Round 4
+      * _z_[16..31] = [1, 6, 11, 0, 5, 10, 15, 4, 9, 14, 3, 8, 13, 2, 7, 12]
+      * _z_[32..47] = [5, 8, 11, 14, 1, 4, 7, 10, 13, 0, 3, 6, 9, 12, 15, 2]
+      * _z_[48..63] = [0, 7, 14, 5, 12, 3, 10, 1, 8, 15, 6, 13, 4, 11, 2, 9]
+   3. Redefine number of bit positions for left shifts
+      * _s_[0..15] = [7, 12, 17, 22, 7, 12, 7, 12, 17, 22, 7, 12, 17, 22,  7, 12, 17, 22]
+      * _s_[16..31] = [5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20]
+      * _s_[32..47] = [4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23]
+      * _s_[48..63] = [6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21]
+3. _Preprocessing_: Same as MD4
+4. _Processing_: 
+   1. In Rounds 1-3, replace `B <- (t <- s[j])` with `B <- B + ( t <- s[j])`
+   2. Immediately after Round 3, add Round 4 transformation routine:
+      1. `t <- ( A + k(B, C, D) + X[z[j]] + y[j], (A, B, C, D) <- (D, B + (t <- s[j]), B, C)`
+5. _Completion_: MD5 is now compete, see MD4 for details  
 
 ## Complexity
 __This should be the most significant part of the report.
