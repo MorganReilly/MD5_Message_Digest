@@ -36,6 +36,23 @@ To expand further on the above definitions, as per chapter 9 of the handbook of 
 
 ![hash classification](./images/ClassificationOfHash.png)
 
+#### Notations
+| Notation         | Meaning |
+| ---------------- |:------------------------------------------------:|
+| _u,v,w_          | 32-bit variables                                 |
+| 0x67452301       | Hexidecimal 32-bit integer                       |
+| +                | addition modulo 2^32                             |
+| _!u_             | Bitwise complement                               |
+| _u <- s_         | Result of rotating _u_ through _s_ positions     |
+| _uv_             | Bitwise AND                                      |
+| _u_ V _v_|       | Bitwise inclusive-OR                             |
+| _u⊕v_            | Bitwise exclusive-OR                             |
+| _f(u,v,w)_       | _uv_ V _!uw_                                     |
+| _g(u,v,w)_       | _uv_ V _uw_ V _vw_                               |
+| _h(u,v,w)_       | _u⊕v⊕w_                                          | 
+| `(X1,...,Xj) <-` | Simultanious assignments `(Xi <- Yi)`            |
+| `(Y1,...,Yj)`    | Where `(Y1,...,Yj)` evaluated before assignments |
+
 #### About MD4
 MD4 was designed for software implementations on 32-bit machines. However, security concerns motivted the design of MD5, which is a more conservative version of MD4. Other versions include the SHA and RIPEMD implementations. The original MD4 (128-bit hash function) was designed in such a way that breaking it would require brute-force effort (2^64 operations) and finding a message yeilding a pre-specified hash-value (s^128 operations). MD4 was proven to never meet this goal. It serves, instead, as a convienient reference for describig and allowing coparisons between other hash functions in this family. Collisions have been found at 2^20 computations for MD4.
 
@@ -88,6 +105,14 @@ Include instructions of how to install the compiler.__
 __Explain how to run the tests included in your code.__
 * To test application, run option: `x`
 
+#### Test Vectors
+| Name | String                         | Hash Value                       |
+| ---- |:------------------------------:|:--------------------------------:|
+| MD5  | ""                             | d41d8cd98f00b204e9800998ecf8427e |
+|      | "a"                            | 0cc175b9c0f1b6a831c399e269772661 |
+|      | "abc"                          | 900150983cd24fb0d6963f7d28e17f72 |
+|      | "abcdefghijklmnopqrstuvwxyz"   | c3fcd3d76192e4007dfb496cca67e13b |
+
 ## Algorithm
 __Give an overview and explanation of the main algorithm(s)
 in your code. You might use a well-thought out diagram here.__
@@ -139,7 +164,7 @@ The MD5 was designed to be a strengthened version of the Message Digest 4 algori
 * OUTPUT: 128-bit hash-code of _x_
 _The following changes made to MD4 will result in MD5_
 1. _Notation_ : Replace Round 2 function by: `g(u, v, w) = uw V !uw`
-   1. Define a Round 4 function: `k(u, v, w) = v XOR (u V !w)`
+   1. Define a Round 4 function: `k(u, v, w) = v ⊕ (u V !w)`
 2. _Constants Definition_
    1. Redefine unique additive constants:
       * _y[j]_ = first 32-bits binary value _abs( sin( j + 1 ))_, 0 <= _j_ <= 63
