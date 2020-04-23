@@ -195,6 +195,18 @@ should be carefully referenced.__
 
 In terms of time complexity the MD5 algorithm performs in O(n) time and is quite fast, and in terms of design, uses the “trail-and-error” paradigm. 
 However, a more comprehensive understanding of the hash function would be through understanding how various attack strategies work in relation to the hash functions.
+
+When given a specific hash function, a desirable outcome is to prove a lower bound on the complexity of the attack in specific scenarios, with as few weak sets of assumptions as possible. This, however, is quite hard to do and the results are subsequently scarce. Typically it is better, in terms of security, for a hash function to look at the complexity of the applicable attack, which results in the upper bound on security. The storage complexity of the attack is something which should also be considered.
+
+| Hash Type | Design Goal                | Ideal Strength         | Adversary's Goal              |
+| --------- | -------------------------- |:----------------------:| ----------------------------- |
+| OWHF      | Preimage Resistance;       | _2^n_                  | Produce Preimage;             |
+|           | Second Preimage Resistance | _2^n_                  | Find Second input, same image |
+| CRHF      | Collision Resistance       | _2^n/2_                | Produce any collision         |
+| MAC       | Key Non-Recovery;          | _2^t_                  | Deduce MAC key;               |
+|           | Computation Resistance     | _Pf = max(2^-t, 2^-n)_ | Produce new (msg, MAC)        |
+_Design objectives for n-bit hash functions. Where Pt = Probabilty of forgery for correctly guessing a MAC. Adapted from section 9.3.4 [1](http://cacr.uwaterloo.ca/hac/)_
+
 ### Overview of Attacks
 There are many various types of attacks which can be performed on hash algorithms. At a high level these are:
 * Premiage Attacks: This is where you try to find the input which hashes to the already determined output.
@@ -206,6 +218,14 @@ There are many various types of attacks which can be performed on hash algorithm
 * Birthday Attacks: These are brute force attacks against a one-way hash function.
 * Differential Attacks: These work by checking if there is a change in input, and then producing an XOR difference in the chaining variables. If the XOR difference is set to zero at the end, the collision will be detected.
 * One bit difference attack: This is where by you take two inputs in such way that all input words are the same bar one word with an XOR difference of 1-bit. Assume word[i] is included in the final round. It can be assumed that there is a collision if we get the same chaining variables at the final position since all input variables are the same.
+
+### Attacks on bitsize of MDC
+Given a fixed message _m_ with _n-bit_ hash _h(x)_, a simple method for checking input collision with _x_ is to pick a random bitstring _x1_ and just checking if _h(x) = h(x1)_. The cost of this is quite low, equating to the evaluation of one compression function, with a negligible memory cost. If it’s assumed that the hash-code approximates to a systematic random variable, the probability of a match is _2^-n_. 
+
+When using basic hash attacks for a _n-bit_ hash function _h_, a guessing attack should find a preimage or second preimage within _2^n_ operations. If the attacker can choose the message(s), a birthday attack allows colliding pairs of messages _x,x1_ with _h(x) = h(x1)_ to be found in roughly _2^n/2_ operations, with quite a low memory cost. By this we find that that an _n-bit_ unkeyed hash function has an ideal security if 2 conditions are met:
+1. Given hash output, production of a preimage and second preimage requires roughly _2^n_ operations.
+2. Production of a collision requires roughly _2^n/2_ operations.
+
 
 ### Birthday Attacks
 This is an algorithm independent attack, which means it can be applied to any hash function, where-by you treat the hash function as a black box whose only significant characteristic is the output it gives, which in the case of the MD4 and MD5, is the bitlength n, and the running time for one hash operation. In this case it is normally assumed that the hash output approximates to a uniform random variable.
