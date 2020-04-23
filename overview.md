@@ -227,6 +227,12 @@ If you remove the memory requirement of Yuvals birthday attack, a deterministic 
 Chaining attacks are based around the hash functions iterative nature, along with the use of chaining variables, with a focus on compression function _f_ rather than the overall hash function _h_ .
 An example of this would be: If we consider an iterative hash function _h_ which produces a 128-bit hash-result, which is also collision resistant, with a compression function _f_ which takes its inputs as a 512-bit message block _xi_, along with a 128-bit chaining variable _Hi (H0 = IV)_ and producing output _Hi+1 = f(Hi, Xi)_. For a 10-block fixed message _x_ , let _H = h(x)_. If any of the blocks which affect _H_ are replaced with a different block, and if _h_ behaves like a random mapping, the number of 512-bit blocks should approximate to _ 2^512 / 2^128 = 2^384 _. Any method in which you would find any one of the 2^384 blocks which are distinct from the original block set would be considered an attack on _h_. The challenge with this is that the blocks are a sparse subset of the complete block set, which leaves a _1 in 2^128_ chance.
 
+#### Meet in the Middle Chaining Attacks
+These attacks are quite similar to Yuvals birthday attack, but have less collisions on intermediate result. They allow the finding of a message with a pre-specified hash on either a collision or a 2nd-preimiage attack. The point of attack is identified between the blocks of a fraudulent message. Variations of the blocks are generated at this point. The variations are hashed forward from the algorithm-specified IV, and backwards from the final target hash-result, seeking collisions at the attack point for variable _Hi_. The attacker must be able to traverse through the chain backwards for this attack to work properly.
+
+#### Fixed Point Chaining Attack
+A fixed point for a compression function is a pair _(Hi-1, xi)_ where by _f(Hi-1, xi) = Hi-1_. Based on this pair (message block, chaining value), the hash on a message isn’t changed upon the insertion of a capricious number of identical blocks _xi_ at the chaining point where the chaining value arises. These attacks are a concern if the chaining variable has a value where by the the fixed point in known. Fixed points can allow for collisions and 2nd-preimages to be produced; the inclusion of a trailing length block can counter this effect. 
+
 ## References
 __Provide a list of references used in your project. The
 references should not just be a list of websites. Instead, there
