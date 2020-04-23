@@ -233,6 +233,9 @@ These attacks are quite similar to Yuvals birthday attack, but have less collisi
 #### Fixed Point Chaining Attack
 A fixed point for a compression function is a pair _(Hi-1, xi)_ where by _f(Hi-1, xi) = Hi-1_. Based on this pair (message block, chaining value), the hash on a message isn’t changed upon the insertion of a capricious number of identical blocks _xi_ at the chaining point where the chaining value arises. These attacks are a concern if the chaining variable has a value where by the the fixed point in known. Fixed points can allow for collisions and 2nd-preimages to be produced; the inclusion of a trailing length block can counter this effect. 
 
+#### Differential Chaining Attack
+Differential chaining attacks prove to be quite a powerful tool for the cryptoanalysis of hash functions and block ciphers. For multi-round block ciphers this method examines XOR input differences to round functions and their corresponding differences in output, while searching for anomalies in the statistical information. For hash functions, it examines the input differences to compression functions along with the corresponding differences in output.
+
 ## References
 __Provide a list of references used in your project. The
 references should not just be a list of websites. Instead, there
