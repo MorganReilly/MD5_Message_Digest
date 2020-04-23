@@ -223,6 +223,10 @@ An algorithmic example of this would be Yuval’s birthday attack. This was one 
 #### Memory-less variation of Birthday Attack
 If you remove the memory requirement of Yuvals birthday attack, a deterministic mapping could be used in lieu of the memory aspect which would approximate to a random walk through the hash-value space. For this we would expect to encounter a point a second time after O(2^m/2) steps, after which the walk will begin to cycle. To implement this, following the above algorithm, let _g(x1, H) = x1_ , which would be a minor modification, determined by the hash-value _H_ of message _x1_ . Should _x1_ be fixed, then _g_ should map to a hash-result of the message. This search technique is used to find two inputs to _r_ which should collide. If _h_ behaves in a random fashion, with a probability of 0.5, then the parity will be different in the output _H_ for the colliding input values.
 
+### Chaining Attacks
+Chaining attacks are based around the hash functions iterative nature, along with the use of chaining variables, with a focus on compression function _f_ rather than the overall hash function _h_ .
+An example of this would be: If we consider an iterative hash function _h_ which produces a 128-bit hash-result, which is also collision resistant, with a compression function _f_ which takes its inputs as a 512-bit message block _xi_, along with a 128-bit chaining variable _Hi (H0 = IV)_ and producing output _Hi+1 = f(Hi, Xi)_. For a 10-block fixed message _x_ , let _H = h(x)_. If any of the blocks which affect _H_ are replaced with a different block, and if _h_ behaves like a random mapping, the number of 512-bit blocks should approximate to _ 2^512 / 2^128 = 2^384 _. Any method in which you would find any one of the 2^384 blocks which are distinct from the original block set would be considered an attack on _h_. The challenge with this is that the blocks are a sparse subset of the complete block set, which leaves a _1 in 2^128_ chance.
+
 ## References
 __Provide a list of references used in your project. The
 references should not just be a list of websites. Instead, there
