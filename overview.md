@@ -192,6 +192,26 @@ algorithm. That is, algorithms that attempt to find an input for
 which the MD5 algorithm produces a given output. You should
 research this topic before writing this section and your analysis
 should be carefully referenced.__
+In terms of time complexity the MD5 algorithm performs in O(n) time and is quite fast, and in terms of design, uses the “trail-and-error” paradigm. 
+However, a more comprehensive understanding of the hash function would be through understanding how various attack strategies work in relation to the hash functions.
+
+### Birthday Attacks
+This is an algorithm independent attack, which means it can be applied to any hash function, where-by you treat the hash function as a black box whose only significant characteristic is the output it gives, which in the case of the MD4 and MD5, is the bitlength n, and the running time for one hash operation. In this case it is normally assumed that the hash output approximates to a uniform random variable.
+
+#### Yuval's Birthday Attack
+An algorithmic example of this would be Yuval’s birthday attack. This was one of the first of many applications, in a cryptographic sense, from the birthday paradox, which arose from the classical occupancy distribution. This means that when choosing elements in a random fashion, with replacement, from a set of _N_ elements, with high probability that a repeated element will be encountered after O(_√N_) selections (These are more commonly called _square-root attacks_). The relevance of this is that it is much easier to find collisions to a one-way hash function than it is when compared to collision detection for the likes of pre-images, second pre-images, or even for specific hash values. The result of this being that signature schemes which use a one-way hash function may be vulnerable to Yuvals attack. This attack can be applied to any unkeyed hash function with a running time of O(_2^m/2_) with a varying bitlength _m_ of the hash.
+
+##### Algorithm
+* INPUT: genuine message _x1_; fake message _x2_; _m-bit_ one-way hash function _h_.
+* OUTPUT: The result of minor modifications of _x1_, _x2_ with _h(x1) = h(x2)_
+1. Generate _t = 2^m/2_ minor modifications _x1_ of _x1_
+2. Hash each modified message, then store the hash-values in a way where they can be searched by hash-value.
+3. Generate minor modifications _x2_ of _x2_, computing _h(x2)_ for each, checking for matches with any _x1_,  continuing until a match is found.
+
+#### Memory-less variation of Birthday Attack
+If you remove the memory requirement of Yuvals birthday attack, a deterministic mapping could be used in lieu of the memory aspect which would approximate to a random walk through the hash-value space. For this we would expect to encounter a point a second time after O(2^m/2) steps, after which the walk will begin to cycle.
+
+
 
 ## References
 __Provide a list of references used in your project. The
