@@ -192,8 +192,20 @@ algorithm. That is, algorithms that attempt to find an input for
 which the MD5 algorithm produces a given output. You should
 research this topic before writing this section and your analysis
 should be carefully referenced.__
+
 In terms of time complexity the MD5 algorithm performs in O(n) time and is quite fast, and in terms of design, uses the “trail-and-error” paradigm. 
 However, a more comprehensive understanding of the hash function would be through understanding how various attack strategies work in relation to the hash functions.
+### Overview of Attacks
+There are many various types of attacks which can be performed on hash algorithms. At a high level these are:
+* Premiage Attacks: This is where you try to find the input which hashes to the already determined output.
+* Second Permiage Attacks: These are similar to premiage attacks, but the attacker would have additional information about the message that will be hashed to the determined digest.
+* Collision Attacks: This is where you try to find two messages which hash to the same digest. Once found, sign one message but pretend to sign the second. With this, collision attacks can be further broken down into 3 sub-categories:
+   * Pseudo collisions: This is where the initial values differ, but the input message stays the same.
+   * Collisions in compression function: This is where the initial values remain the same but the input message differ. However, the initial values cannot be selected.
+   * Full collisions: This is similar to the collisions in compressions function, but the difference being that only the initial values can be selected.
+* Birthday Attacks: These are brute force attacks against a one-way hash function.
+* Differential Attacks: These work by checking if there is a change in input, and then producing an XOR difference in the chaining variables. If the XOR difference is set to zero at the end, the collision will be detected.
+* One bit difference attack: This is where by you take two inputs in such way that all input words are the same bar one word with an XOR difference of 1-bit. Assume word[i] is included in the final round. It can be assumed that there is a collision if we get the same chaining variables at the final position since all input variables are the same.
 
 ### Birthday Attacks
 This is an algorithm independent attack, which means it can be applied to any hash function, where-by you treat the hash function as a black box whose only significant characteristic is the output it gives, which in the case of the MD4 and MD5, is the bitlength n, and the running time for one hash operation. In this case it is normally assumed that the hash output approximates to a uniform random variable.
@@ -209,9 +221,7 @@ An algorithmic example of this would be Yuval’s birthday attack. This was one 
 3. Generate minor modifications _x2_ of _x2_, computing _h(x2)_ for each, checking for matches with any _x1_,  continuing until a match is found.
 
 #### Memory-less variation of Birthday Attack
-If you remove the memory requirement of Yuvals birthday attack, a deterministic mapping could be used in lieu of the memory aspect which would approximate to a random walk through the hash-value space. For this we would expect to encounter a point a second time after O(2^m/2) steps, after which the walk will begin to cycle.
-
-
+If you remove the memory requirement of Yuvals birthday attack, a deterministic mapping could be used in lieu of the memory aspect which would approximate to a random walk through the hash-value space. For this we would expect to encounter a point a second time after O(2^m/2) steps, after which the walk will begin to cycle. To implement this, following the above algorithm, let _g(x1, H) = x1_ , which would be a minor modification, determined by the hash-value _H_ of message _x1_ . Should _x1_ be fixed, then _g_ should map to a hash-result of the message. This search technique is used to find two inputs to _r_ which should collide. If _h_ behaves in a random fashion, with a probability of 0.5, then the parity will be different in the output _H_ for the colliding input values.
 
 ## References
 __Provide a list of references used in your project. The
