@@ -25,6 +25,9 @@ Currently there have been no collisions found on MD5
 ### Conclusions
 I was unable to generate a correct message digest, despite following the instructions from reference [4](https://www.ietf.org/rfc/rfc1321.txt), this was due, I think, to the endianness of the program. However this project was an interesting and challenging undertaking which expanded on my existing knowledge of C, and also introduced me to cryptographic functions.
 
+#### More Info
+For a more in-depth anaylsis and review please view [overview.md](./overview.md)
+
 #### References
 * 1: [HandBook of Applied Cryptography, Chapter 9.49](http://cacr.uwaterloo.ca/hac/about/chap9.pdf)
 * 2: [MD5 Diagram - Block Processing](https://www.iusmentis.com/technology/hashfunctions/md5/)

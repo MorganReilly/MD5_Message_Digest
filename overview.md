@@ -257,7 +257,7 @@ A fixed point for a compression function is a pair _(Hi-1, xi)_ where by _f(Hi-1
 Differential chaining attacks prove to be quite a powerful tool for the cryptoanalysis of hash functions and block ciphers. For multi-round block ciphers this method examines XOR input differences to round functions and their corresponding differences in output, while searching for anomalies in the statistical information. For hash functions, it examines the input differences to compression functions along with the corresponding differences in output.
 
 ## References
-__Provide a list of references used in your project. The
+_Provide a list of references used in your project. The
 references should not just be a list of websites. Instead, there
 should be a short explanation of why each reference is relevant to
-your document.__
+your document._
