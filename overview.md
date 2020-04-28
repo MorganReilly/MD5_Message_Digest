@@ -96,14 +96,22 @@ Include instructions of how to install the compiler.__
 * `$ make md5`
 
 #### Run Application
-* To Run program, run:
-* `$ ./md5`
-* Select an option from in menu display
-* `$ <option>`
+* This application has 4 differnt run options
+* Digest from String, run:
+* `$ ./md5 -s"HelloWorld"`
+* Display test suite, run:
+* `$ ./md5 -t`
+* Display test help, run:
+* `$ ./md5 -h`
+* Digest from file, run:
+* `$ ./md5 <file_name>`
+
 
 ## Test
 __Explain how to run the tests included in your code.__
-* To test application, run option: `x`
+* To test application, run:
+* `$ ./md5 -t`
+* This will display the test suite for digest comparision
 
 #### Test Vectors
 | Name | String                         | Hash Value                       |
@@ -261,3 +269,30 @@ _Provide a list of references used in your project. The
 references should not just be a list of websites. Instead, there
 should be a short explanation of why each reference is relevant to
 your document._
+
+1. [HandBook of Applied Cryptography, Chapter 9.49](http://cacr.uwaterloo.ca/hac/about/chap9.pdf)
+   * I found this to be my go-to guide for both the SHA256 tutorial we were doing in class, and also for the MD5 project. It is a very comprehensive guide and allowed me to get an introduction to what cryptographic functions are, gave me a diagrammatic view of how the compression functions are applied and just was an overall great aid to the code, aiding in conceptualising the algorithm itself, and a massive help to the report, aiding in.  
+
+2. [MD5 Diagram - Block Processing](https://www.iusmentis.com/technology/hashfunctions/md5/)
+	* This was used to verify I had the correct inputs, to undertand how the table of constants were generated, to understand the auxialliary functions, and also has a nice diagram.
+
+3. [MD5 Specification](http://practicalcryptography.com/hashes/md5-hash/)
+   * This link was just as useful as The HandBook of Applied Cryptography, gave a nice understanding of how the algorithm worked and what was needed to make it work, but didn’t really explain much more apart from that.
+
+4. [ietf MD5 Spec](https://www.ietf.org/rfc/rfc1321.txt)
+   * This was the specification which was linked to the project. This was a great and invaluable source of information of which I would have been lost without. I have used this to adapt code from in various stages of the project.
+
+5. [Bitwise Operations](https://www.geeksforgeeks.org/bitwise-operators-in-c-cpp/)
+   * Great table and information on the bitwise opertations used in the projects and the tutorials
+
+6. [MD4 code -- used for helping me understand the rounds](https://code.woboq.org/linux/linux/crypto/md4.c.html)
+   * Code for the MD4 algorithm. This was useful when I just couldn’t get my head around how the rounds worked. I knew this wouldn’t give me the full answer but would give me an accurate enough result for me to base my understanding off of. (This was used before I saw that reference 4 actually contained the code for the MD5…)
+
+7. [MD5 Algorithm Overview](http://www.herongyang.com/Cryptography/MD5-Message-Digest-Algorithm-Overview.html)
+   * This was used to get an understanding of what was expected in the code without it being specifically written in C. This was great in that I could conceptualise the algorithm and see how the rounds worked without getting bogged down into the complexity of bits and bytes.
+
+8. [Cryptographic Hashing Functions - MD5](https://cs.indstate.edu/~fsagar/doc/paper.pdf)
+   * This was a nice paper on the MD5, not sure of the language, looks like python but mainly used it for the table generation which is on the top of page 5. Good explination of the algorithm and setup.
+
+9. [Cryptoanalysis of MD4 and MD5](https://www.researchgate.net/publication/317096093_Cryptanalyzing_of_Message_Digest_Algorithms_MD4_and_MD5)
+   * This paper was used to help get an understanding of the different types of attacks which can be performed on the MD4 and MD5 hashing algorithms

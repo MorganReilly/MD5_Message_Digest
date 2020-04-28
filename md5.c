@@ -453,7 +453,7 @@ static void PrintMessageDigest(digest)unsigned char digest[16];
 /* Display Menu Options */
 static void DisplayOptions() {
     printf("MD5 Hash Generator\n");
-    printf("Options List\n-s:   Generate From String\n-t:   Display Test Values\n-h:   Display Help\n<filename>:   Generate From File\n");
+    printf("Options List\n-s<string_input>:   Generate From String\n-t:   Display Test Values\n-h:   Display Help\n<filename>:   Generate From File\n");
 }
 
 /* Display Menu */
