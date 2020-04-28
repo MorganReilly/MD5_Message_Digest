@@ -3,20 +3,21 @@
 ## Morgan Reilly | G00303598
 
 ## Introduction
+
+#### Introduction to Cryptograpic Hash Functions
 _An introduction to your repository and code. Describe
 what is contained in the repository and what the code does._
 
-#### Introduction to Cryptograpic Hash Functions
-Cryptographic hash functions play a largely fundamental role in day-to-day cryptography. These are often referred to simply as hash functions, and take a message as input and produce an output known as _hash-value_, _hash-code_, or just as _hash_. Hash functions are used for data integrity in tandem with digital signature schemes, which is hashed first, then the hash-value is signed in place of the original message. [[1]](http://cacr.uwaterloo.ca/hac/)
+Cryptographic hash functions play a largely fundamental role in day-to-day cryptography. These are often referred to simply as hash functions, and take a message as input and produce an output known as _hash-value_, _hash-code_, or just as _hash_. Hash functions are used for data integrity in tandem with digital signature schemes, which is hashed first, then the hash-value is signed in place of the original message. [9.1](http://cacr.uwaterloo.ca/hac/)
 
 #### About MACs
-Message Authentication Codes, which are a distinct class of hash functions, allow message authentication through symmetric techniques. These may be viewed as hash functions which take a message and a secret key, and produce a fixed size output. MACs are used to provide data integrity and symmetric data origin authentication.[[1]](http://cacr.uwaterloo.ca/hac/)
+Message Authentication Codes, which are a distinct class of hash functions, allow message authentication through symmetric techniques. These may be viewed as hash functions which take a message and a secret key, and produce a fixed size output. MACs are used to provide data integrity and symmetric data origin authentication.[9.1](http://cacr.uwaterloo.ca/hac/)
 
 #### Hash Function Classes
-Hash functions can be split into two classes: _unkeyed hash values_ and _keyed hash values_. An _unkeyed hash value_ dictates a single parameter input, usually called a message. Whereas a _keyed hash value_ dictates two input parameters, a message and a key. [[1]](http://cacr.uwaterloo.ca/hac/)
+Hash functions can be split into two classes: _unkeyed hash values_ and _keyed hash values_. An _unkeyed hash value_ dictates a single parameter input, usually called a message. Whereas a _keyed hash value_ dictates two input parameters, a message and a key. [9.2.1](http://cacr.uwaterloo.ca/hac/)
 
 #### Definitions
-The Definition of a hash function, according to the [handbook of applied cryptography Chapter](http://cacr.uwaterloo.ca/hac/)[9.1], is a function which has, as a minimum, the following two properties:
+The Definition of a hash function, according to the [handbook of applied cryptography Chapter](http://cacr.uwaterloo.ca/hac/)[9.2.1], is a function which has, as a minimum, the following two properties:
 1. compression:
    _h_ maps an input _x_ of arbitrary finite bit length, to an output _h(x)_ of fixed bit length _n_.
 2. ease of computation:
@@ -26,10 +27,10 @@ In more detail, a more functional classification of two types of hash functions 
 1. modification detection codes (MDCs): These are also known as manipulation detection codes. The purpose of these are to provide a representative hash of a message. They fall into two categories:
 i. one-way hash functions (OWHFs): These are largely difficult to find an input which hashes to a pre-specified hash value.
 ii. collision resistant hash functions (CRHFs): These are difficult to find any two inputs which have the same hash-value.
-2. message authentication codes (MACs): The purpose of these are to facilitate assurances in both source of a message, and its integrity. [[1]](http://cacr.uwaterloo.ca/hac/)
+2. message authentication codes (MACs): The purpose of these are to facilitate assurances in both source of a message, and its integrity.[9.2.1](http://cacr.uwaterloo.ca/hac/)
 
 #### Basic Properties & Definitions
-To expand further on the above definitions, as per chapter 9 of the handbook of applied cryptography, there are three properties listed for an unkeyed hash function _h_ with inputs _x_ , _x^1_ and outputs _y_, _y^1_, there are as follows:
+To expand further on the above definitions, as per chapter 9 of the handbook of applied cryptography ([9.2.2](http://cacr.uwaterloo.ca/hac/)), there are three properties listed for an unkeyed hash function _h_ with inputs _x_ , _x^1_ and outputs _y_, _y^1_, there are as follows:
 1. preimage resistance: This is essentially for all pre-specified outputs, and is known to be computationally infeasible to find any input which hashes to that output
 2. 2nd premiage resistance: This is computationally infeasible to find any second input which has the same output as any specific input
 3. collision resistance: This is where it is computationally infeasible to find any two distinct inputs _x_, _x^1_ which hash out to the same output.
@@ -52,14 +53,14 @@ To expand further on the above definitions, as per chapter 9 of the handbook of 
 | _h(u,v,w)_       | _u⊕v⊕w_                                          | 
 | `(X1,...,Xj) <-` | Simultanious assignments `(Xi <- Yi)`            |
 | `(Y1,...,Yj)`    | Where `(Y1,...,Yj)` evaluated before assignments |
-
+Adapted From: Table9.7 [9.4.2](http://cacr.uwaterloo.ca/hac/)
 #### About MD4
-MD4 was designed for software implementations on 32-bit machines. However, security concerns motivted the design of MD5, which is a more conservative version of MD4. Other versions include the SHA and RIPEMD implementations. The original MD4 (128-bit hash function) was designed in such a way that breaking it would require brute-force effort (2^64 operations) and finding a message yeilding a pre-specified hash-value (s^128 operations). MD4 was proven to never meet this goal. It serves, instead, as a convienient reference for describig and allowing coparisons between other hash functions in this family. Collisions have been found at 2^20 computations for MD4.
+MD4 was designed for software implementations on 32-bit machines. However, security concerns motivted the design of MD5, which is a more conservative version of MD4. Other versions include the SHA and RIPEMD implementations. The original MD4 (128-bit hash function) was designed in such a way that breaking it would require brute-force effort (2^64 operations) and finding a message yeilding a pre-specified hash-value (s^128 operations). MD4 was proven to never meet this goal. It serves, instead, as a convienient reference for describig and allowing coparisons between other hash functions in this family. Collisions have been found at 2^20 computations for MD4 [9.4.2](http://cacr.uwaterloo.ca/hac/).
 
 ![md4 compression](./images/md4_compression.png)
 
 #### About MD5
-MD5 was designed as a strengthened version of MD4, prior to actual MD4 collisions being found. MD5 is obtained from MD4 by making 6 modifications. These are outline below in reference X. Currently there have been no collisions found on MD5.
+MD5 was designed as a strengthened version of MD4, prior to actual MD4 collisions being found. MD5 is obtained from MD4 by making 6 modifications. These are outline below in reference X. Currently there have been no collisions found on MD5 [9.4.2](http://cacr.uwaterloo.ca/hac/).
 
 ![md5 compression](./images/md5_compression.png)
 
@@ -82,8 +83,8 @@ An overview of the purpose of these components are outlined in the section above
 The code itself allows the user to choose via command line if they would like to input a string or a file to generate an MD5 hash. This is done by breaking the input message into blocks, padding where necessary, then applying the hashing function and returning the message.
 
 ## Run
-__You should explain how to download, compile, and run your code.
-Include instructions of how to install the compiler.__
+_You should explain how to download, compile, and run your code.
+Include instructions of how to install the compiler._
 
 #### Download Application
 * Ensure you have git installed on machine
@@ -108,7 +109,8 @@ Include instructions of how to install the compiler.__
 
 
 ## Test
-__Explain how to run the tests included in your code.__
+_Explain how to run the tests included in your code._
+
 * To test application, run:
 * `$ ./md5 -t`
 * This will display the test suite for digest comparision
@@ -122,8 +124,9 @@ __Explain how to run the tests included in your code.__
 |      | "abcdefghijklmnopqrstuvwxyz"   | c3fcd3d76192e4007dfb496cca67e13b |
 
 ## Algorithm
-__Give an overview and explanation of the main algorithm(s)
-in your code. You might use a well-thought out diagram here.__
+_Give an overview and explanation of the main algorithm(s)
+in your code. You might use a well-thought out diagram here._
+
 Since the MD5 algorithm is based on the MD4 algorithm, I have decided to include both algorithms, describing the changes from MD4 to MD5. The following algorithms are adapted from chapter 9 of the [applied handbook of cryptography](http://cacr.uwaterloo.ca/hac/).
 
 ### MD4
@@ -193,13 +196,13 @@ _The following changes made to MD4 will result in MD5_
 5. _Completion_: MD5 is now compete, see MD4 for details  
 
 ## Complexity
-__This should be the most significant part of the report.
+_This should be the most significant part of the report.
 You must give an analysis of the complexity of the MD5 algorithm,
 including the complexity of algorithms that attempt to reverse the
 algorithm. That is, algorithms that attempt to find an input for
 which the MD5 algorithm produces a given output. You should
 research this topic before writing this section and your analysis
-should be carefully referenced.__
+should be carefully referenced._
 
 In terms of time complexity the MD5 algorithm performs in O(n) time and is quite fast, and in terms of design, uses the “trail-and-error” paradigm. 
 However, a more comprehensive understanding of the hash function would be through understanding how various attack strategies work in relation to the hash functions.
@@ -226,20 +229,23 @@ There are many various types of attacks which can be performed on hash algorithm
 * Birthday Attacks: These are brute force attacks against a one-way hash function.
 * Differential Attacks: These work by checking if there is a change in input, and then producing an XOR difference in the chaining variables. If the XOR difference is set to zero at the end, the collision will be detected.
 * One bit difference attack: This is where by you take two inputs in such way that all input words are the same bar one word with an XOR difference of 1-bit. Assume word[i] is included in the final round. It can be assumed that there is a collision if we get the same chaining variables at the final position since all input variables are the same.
+[Ref](https://www.researchgate.net/publication/317096093_Cryptanalyzing_of_Message_Digest_Algorithms_MD4_and_MD5)
+
 
 ### Attacks on bitsize of MDC
-Given a fixed message _m_ with _n-bit_ hash _h(x)_, a simple method for checking input collision with _x_ is to pick a random bitstring _x1_ and just checking if _h(x) = h(x1)_. The cost of this is quite low, equating to the evaluation of one compression function, with a negligible memory cost. If it’s assumed that the hash-code approximates to a systematic random variable, the probability of a match is _2^-n_. 
+Given a fixed message _m_ with _n-bit_ hash _h(x)_, a simple method for checking input collision with _x_ is to pick a random bitstring _x1_ and just checking if _h(x) = h(x1)_. The cost of this is quite low, equating to the evaluation of one compression function, with a negligible memory cost. If it’s assumed that the hash-code approximates to a systematic random variable, the probability of a match is _2^-n_ [9.3.4](http://cacr.uwaterloo.ca/hac/). .
 
 When using basic hash attacks for a _n-bit_ hash function _h_, a guessing attack should find a preimage or second preimage within _2^n_ operations. If the attacker can choose the message(s), a birthday attack allows colliding pairs of messages _x,x1_ with _h(x) = h(x1)_ to be found in roughly _2^n/2_ operations, with quite a low memory cost. By this we find that that an _n-bit_ unkeyed hash function has an ideal security if 2 conditions are met:
 1. Given hash output, production of a preimage and second preimage requires roughly _2^n_ operations.
 2. Production of a collision requires roughly _2^n/2_ operations.
+[9.3.4](http://cacr.uwaterloo.ca/hac/)
 
 
 ### Birthday Attacks
-This is an algorithm independent attack, which means it can be applied to any hash function, where-by you treat the hash function as a black box whose only significant characteristic is the output it gives, which in the case of the MD4 and MD5, is the bitlength n, and the running time for one hash operation. In this case it is normally assumed that the hash output approximates to a uniform random variable.
+This is an algorithm independent attack, which means it can be applied to any hash function, where-by you treat the hash function as a black box whose only significant characteristic is the output it gives, which in the case of the MD4 and MD5, is the bitlength n, and the running time for one hash operation. In this case it is normally assumed that the hash output approximates to a uniform random variable [9.7.1](http://cacr.uwaterloo.ca/hac/).
 
 #### Yuval's Birthday Attack
-An algorithmic example of this would be Yuval’s birthday attack. This was one of the first of many applications, in a cryptographic sense, from the birthday paradox, which arose from the classical occupancy distribution. This means that when choosing elements in a random fashion, with replacement, from a set of _N_ elements, with high probability that a repeated element will be encountered after O(_√N_) selections (These are more commonly called _square-root attacks_). The relevance of this is that it is much easier to find collisions to a one-way hash function than it is when compared to collision detection for the likes of pre-images, second pre-images, or even for specific hash values. The result of this being that signature schemes which use a one-way hash function may be vulnerable to Yuvals attack. This attack can be applied to any unkeyed hash function with a running time of O(_2^m/2_) with a varying bitlength _m_ of the hash.
+An algorithmic example of this would be Yuval’s birthday attack. This was one of the first of many applications, in a cryptographic sense, from the birthday paradox, which arose from the classical occupancy distribution. This means that when choosing elements in a random fashion, with replacement, from a set of _N_ elements, with high probability that a repeated element will be encountered after O(_√N_) selections (These are more commonly called _square-root attacks_). The relevance of this is that it is much easier to find collisions to a one-way hash function than it is when compared to collision detection for the likes of pre-images, second pre-images, or even for specific hash values. The result of this being that signature schemes which use a one-way hash function may be vulnerable to Yuvals attack. This attack can be applied to any unkeyed hash function with a running time of O(_2^m/2_) with a varying bitlength _m_ of the hash [9.7.1 (9.92)](http://cacr.uwaterloo.ca/hac/).
 
 ##### Algorithm
 * INPUT: genuine message _x1_; fake message _x2_; _m-bit_ one-way hash function _h_.
@@ -247,22 +253,23 @@ An algorithmic example of this would be Yuval’s birthday attack. This was one 
 1. Generate _t = 2^m/2_ minor modifications _x1_ of _x1_
 2. Hash each modified message, then store the hash-values in a way where they can be searched by hash-value.
 3. Generate minor modifications _x2_ of _x2_, computing _h(x2)_ for each, checking for matches with any _x1_,  continuing until a match is found.
+[9.7.1 (9.92)](http://cacr.uwaterloo.ca/hac/)
 
 #### Memory-less variation of Birthday Attack
-If you remove the memory requirement of Yuvals birthday attack, a deterministic mapping could be used in lieu of the memory aspect which would approximate to a random walk through the hash-value space. For this we would expect to encounter a point a second time after O(2^m/2) steps, after which the walk will begin to cycle. To implement this, following the above algorithm, let _g(x1, H) = x1_ , which would be a minor modification, determined by the hash-value _H_ of message _x1_ . Should _x1_ be fixed, then _g_ should map to a hash-result of the message. This search technique is used to find two inputs to _r_ which should collide. If _h_ behaves in a random fashion, with a probability of 0.5, then the parity will be different in the output _H_ for the colliding input values.
+If you remove the memory requirement of Yuvals birthday attack, a deterministic mapping could be used in lieu of the memory aspect which would approximate to a random walk through the hash-value space. For this we would expect to encounter a point a second time after O(2^m/2) steps, after which the walk will begin to cycle. To implement this, following the above algorithm, let _g(x1, H) = x1_ , which would be a minor modification, determined by the hash-value _H_ of message _x1_ . Should _x1_ be fixed, then _g_ should map to a hash-result of the message. This search technique is used to find two inputs to _r_ which should collide. If _h_ behaves in a random fashion, with a probability of 0.5, then the parity will be different in the output _H_ for the colliding input values [9.7.1](http://cacr.uwaterloo.ca/hac/).
 
 ### Chaining Attacks
 Chaining attacks are based around the hash functions iterative nature, along with the use of chaining variables, with a focus on compression function _f_ rather than the overall hash function _h_ .
-An example of this would be: If we consider an iterative hash function _h_ which produces a 128-bit hash-result, which is also collision resistant, with a compression function _f_ which takes its inputs as a 512-bit message block _xi_, along with a 128-bit chaining variable _Hi (H0 = IV)_ and producing output _Hi+1 = f(Hi, Xi)_. For a 10-block fixed message _x_ , let _H = h(x)_. If any of the blocks which affect _H_ are replaced with a different block, and if _h_ behaves like a random mapping, the number of 512-bit blocks should approximate to _ 2^512 / 2^128 = 2^384 _. Any method in which you would find any one of the 2^384 blocks which are distinct from the original block set would be considered an attack on _h_. The challenge with this is that the blocks are a sparse subset of the complete block set, which leaves a _1 in 2^128_ chance.
+An example of this would be: If we consider an iterative hash function _h_ which produces a 128-bit hash-result, which is also collision resistant, with a compression function _f_ which takes its inputs as a 512-bit message block _xi_, along with a 128-bit chaining variable _Hi (H0 = IV)_ and producing output _Hi+1 = f(Hi, Xi)_. For a 10-block fixed message _x_ , let _H = h(x)_. If any of the blocks which affect _H_ are replaced with a different block, and if _h_ behaves like a random mapping, the number of 512-bit blocks should approximate to _ 2^512 / 2^128 = 2^384 _. Any method in which you would find any one of the 2^384 blocks which are distinct from the original block set would be considered an attack on _h_. The challenge with this is that the blocks are a sparse subset of the complete block set, which leaves a _1 in 2^128_ chance [9.7.3](http://cacr.uwaterloo.ca/hac/).
 
 #### Meet in the Middle Chaining Attacks
-These attacks are quite similar to Yuvals birthday attack, but have less collisions on intermediate result. They allow the finding of a message with a pre-specified hash on either a collision or a 2nd-preimiage attack. The point of attack is identified between the blocks of a fraudulent message. Variations of the blocks are generated at this point. The variations are hashed forward from the algorithm-specified IV, and backwards from the final target hash-result, seeking collisions at the attack point for variable _Hi_. The attacker must be able to traverse through the chain backwards for this attack to work properly.
+These attacks are quite similar to Yuvals birthday attack, but have less collisions on intermediate result. They allow the finding of a message with a pre-specified hash on either a collision or a 2nd-preimiage attack. The point of attack is identified between the blocks of a fraudulent message. Variations of the blocks are generated at this point. The variations are hashed forward from the algorithm-specified IV, and backwards from the final target hash-result, seeking collisions at the attack point for variable _Hi_. The attacker must be able to traverse through the chain backwards for this attack to work properly [9.7.3](http://cacr.uwaterloo.ca/hac/).
 
 #### Fixed Point Chaining Attack
-A fixed point for a compression function is a pair _(Hi-1, xi)_ where by _f(Hi-1, xi) = Hi-1_. Based on this pair (message block, chaining value), the hash on a message isn’t changed upon the insertion of a capricious number of identical blocks _xi_ at the chaining point where the chaining value arises. These attacks are a concern if the chaining variable has a value where by the the fixed point in known. Fixed points can allow for collisions and 2nd-preimages to be produced; the inclusion of a trailing length block can counter this effect. 
+A fixed point for a compression function is a pair _(Hi-1, xi)_ where by _f(Hi-1, xi) = Hi-1_. Based on this pair (message block, chaining value), the hash on a message isn’t changed upon the insertion of a capricious number of identical blocks _xi_ at the chaining point where the chaining value arises. These attacks are a concern if the chaining variable has a value where by the the fixed point in known. Fixed points can allow for collisions and 2nd-preimages to be produced; the inclusion of a trailing length block can counter this effect [9.7.3](http://cacr.uwaterloo.ca/hac/). 
 
 #### Differential Chaining Attack
-Differential chaining attacks prove to be quite a powerful tool for the cryptoanalysis of hash functions and block ciphers. For multi-round block ciphers this method examines XOR input differences to round functions and their corresponding differences in output, while searching for anomalies in the statistical information. For hash functions, it examines the input differences to compression functions along with the corresponding differences in output.
+Differential chaining attacks prove to be quite a powerful tool for the cryptoanalysis of hash functions and block ciphers. For multi-round block ciphers this method examines XOR input differences to round functions and their corresponding differences in output, while searching for anomalies in the statistical information. For hash functions, it examines the input differences to compression functions along with the corresponding differences in output [9.7.3](http://cacr.uwaterloo.ca/hac/).
 
 ## References
 _Provide a list of references used in your project. The
@@ -270,8 +277,8 @@ references should not just be a list of websites. Instead, there
 should be a short explanation of why each reference is relevant to
 your document._
 
-1. [HandBook of Applied Cryptography, Chapter 9.49](http://cacr.uwaterloo.ca/hac/about/chap9.pdf)
-   * I found this to be my go-to guide for both the SHA256 tutorial we were doing in class, and also for the MD5 project. It is a very comprehensive guide and allowed me to get an introduction to what cryptographic functions are, gave me a diagrammatic view of how the compression functions are applied and just was an overall great aid to the code, aiding in conceptualising the algorithm itself, and a massive help to the report, aiding in.  
+1. [HandBook of Applied Cryptography, Chapter 9](http://cacr.uwaterloo.ca/hac/about/chap9.pdf)
+   * I found this to be my go-to guide for both the SHA256 tutorial we were doing in class, and also for the MD5 project. It is a very comprehensive guide and allowed me to get an introduction to what cryptographic functions are, gave me a diagrammatic view of how the compression functions are applied and just was an overall great aid to the code, aiding in conceptualising the algorithm itself, and a massive help to the report, aiding in. Note: This is referenced above as [9.x.x]  
 
 2. [MD5 Diagram - Block Processing](https://www.iusmentis.com/technology/hashfunctions/md5/)
 	* This was used to verify I had the correct inputs, to undertand how the table of constants were generated, to understand the auxialliary functions, and also has a nice diagram.
